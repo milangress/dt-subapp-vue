@@ -2,7 +2,7 @@
   div
     svg(width="800", height="800", :viewBox="viewBox", preserveAspectRatio="xMidYMid meet")
       g
-        circle(:cx="circlePos.x", :cy="circlePos.y", r="50")
+        circle(:cx="circlePos.x", :cy="circlePos.y", :r="circleRadius")
 </template>
 
 <script>
@@ -11,6 +11,7 @@ export default {
     return {
       scale: 500,
       radius: 0.5,
+      circleRadius: 50,
       damping: 0.0005
     }
   },
@@ -34,8 +35,7 @@ export default {
 
 <style scoped>
 circle {
-  fill: #999;
-  stroke: #333;
+  fill: #900;
 }
 #info {
   position: absolute;
