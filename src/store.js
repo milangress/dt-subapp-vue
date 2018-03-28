@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import feathersVuex from 'feathers-vuex'
-import { createClient } from './api'
+import { createClient } from './lib/api'
 
 Vue.use(Vuex)
 
