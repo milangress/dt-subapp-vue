@@ -1,8 +1,7 @@
 <template lang="pug">
-  div
-    svg(width="800", height="800", :viewBox="viewBox", preserveAspectRatio="xMidYMid meet")
-      g
-        circle(:cx="circlePos.x", :cy="circlePos.y", :r="circleRadius")
+  svg(width="800", height="800", :viewBox="viewBox", preserveAspectRatio="xMidYMid meet")
+    g
+      circle(:cx="circlePos.x", :cy="circlePos.y", :r="circleRadius")
 </template>
 
 <script>
