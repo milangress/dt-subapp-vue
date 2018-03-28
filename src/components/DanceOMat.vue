@@ -5,7 +5,7 @@
         circle(:cx="circlePos.x", :cy="circlePos.y", r="20")
     div#timelines(v-if="loggedIn")
       | We have {{ timelines.length }} timelines.
-      button(:click="listTimelines") Fetch Timelines
+      button(v-on:click="listTimelines") Fetch Timelines
     div#loginbox(v-if="!loggedIn")
       input(type="text", v-model="payload.email", placeholder="email")
       input(type="password", v-model="payload.password", placeholder="password")
@@ -35,7 +35,8 @@ export default {
         })
         .catch(err => {
           _this.loggedIn = false
-          console.log(err.message, err)
+          console.log(err)
+          window.alert(err.message)
         })
     },
     listTimelines () {
@@ -43,6 +44,7 @@ export default {
       const _this = this
       this.$store.dispatch('maps/find', { query: { type: 'Timeline' } })
         .then(timelines => {
+          console.log(timelines)
           _this.timelines = timelines
         })
     }
