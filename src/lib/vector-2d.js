@@ -17,11 +17,13 @@ class Vector2D {
   }
 
   // Absolute X coords based on window size (pixels)
+
+  // FIXME: this innerWidth / innerHeight stuff is probably bullshit
   get windowX () {
-    return window.innerWidth * (this._x + 1.0)
+    return window.innerWidth * this.x * 0.5 + window.innerWidth * 0.5
   }
   set windowX (val) {
-    this._x = (window.innerWidth / x - 0.5) * 2.0
+    this._x = (window.innerWidth / val - 0.5) * 2.0
   }
 
   // Relative Y Coords (-1.0 to 1.0)
@@ -34,10 +36,10 @@ class Vector2D {
 
   // Absolute Y coords based on window size (pixels)
   get windowY () {
-    return window.innerHeight * (this._y + 1.0)
+    return window.innerHeight * this.y * 0.5 + window.innerHeight * 0.5
   }
   set windowY (val) {
-    this._y = (window.innerHeight / y - 0.5) * 2.0
+    this._y = (window.innerHeight / val - 0.5) * 2.0
   }
 
   //

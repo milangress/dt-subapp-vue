@@ -1,75 +1,34 @@
 <template lang="pug">
-  div
-    svg(:width="svgSize.width", :height="svgSize.height")
-      g
-        circle(:cx="circlePos.x", :cy="circlePos.y", r="20")
-    div#timelines(v-if="loggedIn")
-      | We have {{ timelines.length }} timelines.
-      button(v-on:click="listTimelines") Fetch Timelines
-    div#loginbox(v-if="!loggedIn")
-      input(type="text", v-model="payload.email", placeholder="email")
-      input(type="password", v-model="payload.password", placeholder="password")
-      button(v-on:click="loginUser") Login
+  svg(:width="svgSize.width", :height="svgSize.height")
+    g
+      circle(:cx="circlePos.x", :cy="circlePos.y", r="20")
 </template>
 
 <script>
+import Vector2D from '../lib/vector-2d'
 export default {
   data () {
     return {
-      radius: 200,
-      payload: {
-        strategy: 'local',
-        username: undefined,
-        password: undefined
-      },
-      loggedIn: false,
-      timelines: []
-    }
-  },
-  methods: {
-    loginUser () {
-      const _this = this
-      return this.$store.dispatch('auth/authenticate', _this.payload)
-        .then(() => {
-          _this.loggedIn = true
-        })
-        .catch(err => {
-          _this.loggedIn = false
-          console.log(err)
-          window.alert(err.message)
-        })
-    },
-    listTimelines () {
-      if (!this.loggedIn) return
-      const _this = this
-      this.$store.dispatch('maps/find', { query: { type: 'Timeline' } })
-        .then(timelines => {
-          console.log(timelines)
-          _this.timelines = timelines
-        })
+      center: new Vector2D(),
+      radius: 100,
+      damping: 0.001
     }
   },
   computed: {
-    currentTime () {
-      return this.$store.state.time
-    },
     svgSize () {
+      // FIXME: this innerWidth / innerHeight stuff is probably bullshit (also check Vector2D class!)
       return {
         width: window.innerWidth,
         height: window.innerHeight
       }
     },
-    center () {
-      return {
-        x: window.innerWidth / 2,
-        y: window.innerHeight / 2
-      }
-    },
     circlePos () {
       const _this = this
       return {
-        x: _this.center.x + _this.radius * Math.cos(_this.currentTime * 0.0005),
-        y: _this.center.y + _this.radius * Math.sin(_this.currentTime * 0.0005)
+        x: _this.center.windowX + _this.radius *
+          Math.cos(_this.$store.state.time * _this.damping),
+        y: _this.center.windowY + _this.radius *
+          Math.sin(_this.$store.state.time * _this.damping)
       }
     }
   }
@@ -77,11 +36,6 @@ export default {
 </script>
 
 <style scoped>
-#loginbox, #timelines {
-  position: absolute;
-  left: 20px;
-  top: 20px;
-}
 circle {
   fill: #999;
   stroke: #333;

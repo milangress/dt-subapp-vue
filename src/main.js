@@ -9,7 +9,14 @@ import store from './store'
 
 Vue.config.productionTip = false
 
-const clock = new WobbleClock(50, 10, store)
+const clock = new WobbleClock(
+  // target fps
+  50,
+  // update resolution (ms)
+  10,
+  // store to send the time to
+  store
+)
 clock.start()
 
 /* eslint-disable no-new */
