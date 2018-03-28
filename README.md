@@ -2,7 +2,7 @@
 
 > dance, digger, dance!
 
-![algodance like nobody's clocking](https://media.giphy.com/media/3ohzdI6Tj71ADYsLrW/giphy.gif)
+[![algodance like nobody's clocking](https://media.giphy.com/media/3ohzdI6Tj71ADYsLrW/giphy.gif)](https://giphy.com/gifs/aggro-hardcore-dancing-3ohzdI6Tj71ADYsLrW)
 
 ## Build Setup
 
