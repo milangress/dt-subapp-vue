@@ -2,6 +2,8 @@
 
 > dance, digger, dance!
 
+![algodance like nobody's clocking](https://media.giphy.com/media/3ohzdI6Tj71ADYsLrW/giphy.gif)
+
 ## Build Setup
 
 ``` bash
