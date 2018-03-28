@@ -1,35 +1,32 @@
 <template lang="pug">
-  svg(:width="svgSize.width", :height="svgSize.height")
-    g
-      circle(:cx="circlePos.x", :cy="circlePos.y", r="20")
+  div
+    svg(width="800", height="800", :viewBox="viewBox", preserveAspectRatio="xMidYMid meet")
+      g
+        circle(:cx="circlePos.x", :cy="circlePos.y", r="50")
 </template>
 
 <script>
-import Vector2D from '../lib/vector-2d'
 export default {
   data () {
     return {
-      center: new Vector2D(),
-      radius: 100,
-      damping: 0.001
+      scale: 500,
+      radius: 0.5,
+      damping: 0.0005
     }
   },
   computed: {
-    svgSize () {
-      // FIXME: this innerWidth / innerHeight stuff is probably bullshit (also check Vector2D class!)
-      return {
-        width: window.innerWidth,
-        height: window.innerHeight
-      }
+    viewBox () {
+      return `${this.scale * -1} ${this.scale * -1} ${this.scale * 2} ${this.scale * 2}`
+    },
+    time () {
+      return this.$store.state.time
     },
     circlePos () {
-      const _this = this
-      return {
-        x: _this.center.windowX + _this.radius *
-          Math.cos(_this.$store.state.time * _this.damping),
-        y: _this.center.windowY + _this.radius *
-          Math.sin(_this.$store.state.time * _this.damping)
+      const pos = {
+        x: this.radius * Math.cos(this.time * this.damping) * this.scale,
+        y: this.radius * Math.sin(this.time * this.damping) * this.scale
       }
+      return pos
     }
   }
 }
@@ -39,5 +36,10 @@ export default {
 circle {
   fill: #999;
   stroke: #333;
+}
+#info {
+  position: absolute;
+  left: 20px;
+  top: 20px;
 }
 </style>
