@@ -22,11 +22,10 @@ export default {
       return this.$store.state.time
     },
     circlePos () {
-      const pos = {
+      return {
         x: this.radius * Math.cos(this.time * this.damping) * this.scale,
         y: this.radius * Math.sin(this.time * this.damping) * this.scale
       }
-      return pos
     }
   }
 }
