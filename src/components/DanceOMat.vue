@@ -1,7 +1,7 @@
 <template lang="pug">
   svg(:width="svgSize.width", :height="svgSize.height")
     g
-      circle(:cx="circlePos.x", :cy="circlePos.y", r="20")
+      circle(:cx="circlePos.x", :cy="circlePos.y", r="40", @click="test", :fill="circleFill")
 </template>
 
 <script>
@@ -11,7 +11,8 @@ export default {
     return {
       center: new Vector2D(),
       radius: 100,
-      damping: 0.001
+      damping: 0.0005,
+      circleFill: 'rgb(120,120,120)'
     }
   },
   computed: {
@@ -31,13 +32,23 @@ export default {
           Math.sin(_this.$store.state.time * _this.damping)
       }
     }
+  },
+  methods: {
+    test () {
+      this.circleFill = `rgb(${parseInt(Math.random() * 255)},${parseInt(Math.random() * 255)},${parseInt(Math.random() * 255)})`
+    }
   }
 }
 </script>
 
 <style scoped>
-circle {
-  fill: #999;
-  stroke: #333;
-}
+
+  circle {
+    stroke: #333;
+  }
+
+  circle:hover {
+    cursor: pointer;
+  }
+
 </style>
