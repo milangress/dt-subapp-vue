@@ -21,7 +21,7 @@ const DIRECTIONS = [
   {x: 0, y: 1},
   {x: -1, y: 1},
   {x: -1, y: 0},
-  {x: -1, y: -1},
+  {x: -1, y: -1}
 ]
 export default {
   data () {
@@ -55,8 +55,8 @@ export default {
       let lines = []
       for (let i = 0; i < 100; i++) {
         let line = {
-          x1: 1 + Math.round(Math.random() * (this.grid.columns-2)),
-          y1: 1 + Math.round(Math.random() * (this.grid.rows-2))
+          x1: 1 + Math.round(Math.random() * (this.grid.columns - 2)),
+          y1: 1 + Math.round(Math.random() * (this.grid.rows - 2))
         }
         let dir = DIRECTIONS[Math.floor(Math.random() * 8)]
         line.x2 = line.x1 + dir.x
