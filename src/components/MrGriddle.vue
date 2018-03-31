@@ -28,7 +28,7 @@ export default {
     return {
       grid: {
         columns: 12,
-        rows: 5
+        rows: 8
       },
       lines: []
     }
