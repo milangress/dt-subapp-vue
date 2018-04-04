@@ -25,6 +25,7 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 ## License
 
 :copyright: 2018 [Motion Bank](https://github.com/motionbank)
+
 This program is free software. It comes without any warranty, to the extent permitted by applicable law.
 
 You can redistribute it and/or modify it under the
