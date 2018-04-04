@@ -1,14 +1,14 @@
 <template lang="pug">
-  svg(width="100vw",height="100vh")
-    g
-      template(v-for="(segment, i) in segments")
-        g(class="segment", @click="() => {handleClick(i)}",
-          :fill="colors[i]", stroke="black", stroke-width="10")
-          svg-arc(:x="arc.x", :y="arc.y",
-                  :rx="arc.rx", :ry="arc.ry",
-                  :closed="arc.closed", :pieChart="arc.pieChart",
-                  :start="segment[0]", :end="segment[1]")
-      circle(:cx="arc.x", :cy="arc.y", r="8", fill="black")
+    svg(width="100vw", height="100vh", ref="svgContainer")
+        g(:transform="`translate(${canvasSize.width/2}, ${canvasSize.height/2})`")
+          template(v-for="(segment, i) in segments")
+            g(class="segment", @click="() => {handleClick(i)}",
+              :fill="colors[i]", stroke="black", stroke-width="10")
+              svg-arc(:x="arc.x", :y="arc.y",
+                      :rx="arc.rx", :ry="arc.ry",
+                      :closed="arc.closed", :pieChart="arc.pieChart",
+                      :start="segment[0]", :end="segment[1]")
+          circle(:cx="arc.x", :cy="arc.y", r="8", fill="black")
 </template>
 
 <script>
@@ -27,16 +27,30 @@ export default {
         'red', 'limegreen', 'lightblue', 'orange', 'pink'
       ],
       arc: {
-        x: 200,
-        y: 200,
-        rx: 100,
+        x: 0,
+        y: 0,
+        rx: 200,
         ry: 100,
         closed: false,
         pieChart: true
       }
     }
   },
+  mounted () {
+  },
   computed: {
+    canvasSize () {
+      if (this.$refs.svgContainer) {
+        return {
+          width: this.$refs.svgContainer.clientWidth,
+          height: this.$refs.svgContainer.clientHeight
+        }
+      }
+      return {
+        width: window.innerWidth,
+        height: window.innerHeight
+      }
+    },
     time () {
       return this.$store.state.time
     },
