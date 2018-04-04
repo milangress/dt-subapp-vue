@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "dance, digger, dance!",
   "author": "Motion Bank <info@motionbank.org>",
+  "license": "WTFPL",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",

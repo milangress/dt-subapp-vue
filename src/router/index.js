@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import DanceOMat from '@/components/DanceOMat'
 import MrGriddle from '@/components/MrGriddle'
 import RhythmAndShoes from '@/components/RhythmAndShoes'
+import PathDrawer from '@/components/PathDrawer'
 import Login from '@/components/Login'
 
 Vue.use(Router)
@@ -28,6 +29,11 @@ export default new Router({
       path: '/login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/path-drawer',
+      name: 'PathDrawer',
+      component: PathDrawer
     }
   ]
 })
