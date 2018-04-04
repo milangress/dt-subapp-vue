@@ -3,10 +3,13 @@
    g(@mousedown="initDraw", @mousemove="draw", @mouseup="stopDraw")
     rect(:x="svgSize.width / 2 - svgSize.width /2 * 0.85", :y="svgSize.height /2 - svgSize.height /2 * 0.85" width="85%",
           height="85%", fill="white", stroke="grey", stroke-width="3")
-    polyline(:class="{drawing: true, animation: animate}", :style="{'stroke-dasharray': time, 'stroke-dashoffset': pathLength}",
-            :points="path", fill="none", stroke-linejoin="round", stroke="black", stroke-width="5")
+    polyline(v-for="(d, i) in colors", :class="{drawing: true}",
+            :style="{'stroke': selectedColor, 'stroke-dasharray': pathLength, 'stroke-dashoffset': time}",
+            :points="path", fill="none", stroke-linejoin="round")
    g
     circle(cx="50", cy="20%", r="20", stroke="grey", stroke-width="2" fill="white", @click="play")
+    circle(v-for="(d, i) in colors", cx="50", :cy="circlesY(i)", r="20", stroke="grey", stroke-width="2", :fill="d",
+            @click="selectColor(i)")
 </template>
 
 <script>
@@ -18,13 +21,15 @@ export default {
       path: '',
       drag: false,
       animate: false,
-      pathLength: 0
+      pathLength: 0,
+      colors: ['#83AE9B', '#C8C8A9', '#F9CDAE', '#F69A9A', '#EF4566'],
+      selectedColor: '#000000'
     }
   },
 
   computed: {
     time () {
-      return this.animate ? (this.$store.state.time * 0.01) % this.pathLength : 0
+      return this.animate ? this.pathLength - (this.$store.state.time * 0.1) % this.pathLength : 0
     },
     svgSize () {
       return {
@@ -54,8 +59,13 @@ export default {
       this.drag = false
     },
     play () {
-      console.log('animate')
       this.animate = true
+    },
+    circlesY (i) {
+      return this.svgSize.height / 2 * 0.85 + i * 50
+    },
+    selectColor (i) {
+      this.selectedColor = this.colors[i]
     }
   }
 }
@@ -70,17 +80,8 @@ export default {
     left: 0;
   }
   .drawing {
-    stroke: blue;
-    stroke-width: 5;
+    stroke-width: 4;
     stroke-linecap: round;
   }
-  .animation {
-    stroke: red;
-    animation: dash 5s linear forwards;
-  }
-  @keyframes dash {
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
+
 </style>
