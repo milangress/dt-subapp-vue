@@ -3,7 +3,7 @@
    g(@mousedown="initDraw", @mousemove="draw", @mouseup="stopDraw")
     rect(:x="svgSize.width / 2 - svgSize.width /2 * 0.85", :y="svgSize.height /2 - svgSize.height /2 * 0.85" width="85%",
           height="85%", fill="white", stroke="grey", stroke-width="3")
-    polyline(class="drawing", :class="{animation: animate, 'stroke-dasharray': pathLength, 'stroke-dashoffset': pathLength}",
+    polyline(:class="{drawing: true, animation: animate}", :style="{'stroke-dasharray': time, 'stroke-dashoffset': pathLength}",
             :points="path", fill="none", stroke-linejoin="round", stroke="black", stroke-width="5")
    g
     circle(cx="50", cy="20%", r="20", stroke="grey", stroke-width="2" fill="white", @click="play")
@@ -23,9 +23,8 @@ export default {
   },
 
   computed: {
-
     time () {
-      return this.$store.state.time
+      return this.animate ? (this.$store.state.time * 0.01) % this.pathLength : 0
     },
     svgSize () {
       return {
