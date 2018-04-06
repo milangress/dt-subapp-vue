@@ -1,15 +1,21 @@
 <template lang="pug">
-  svg(width="100vw", height="100vh")
-   g(@mousedown="initDraw", @mousemove="draw", @mouseup="stopDraw")
-    rect(:x="svgSize.width / 2 - svgSize.width /2 * 0.85", :y="svgSize.height /2 - svgSize.height /2 * 0.85" width="85%",
-          height="85%", fill="white", stroke="grey", stroke-width="3")
-    polyline(v-for="(d, i) in colors", :class="{drawing: true}",
-            :style="{'stroke': selectedColor, 'stroke-dasharray': pathLength, 'stroke-dashoffset': time}",
-            :points="path", fill="none", stroke-linejoin="round")
-   g
-    circle(cx="50", cy="20%", r="20", stroke="grey", stroke-width="2" fill="white", @click="play")
-    circle(v-for="(d, i) in colors", cx="50", :cy="circlesY(i)", r="20", stroke="grey", stroke-width="2", :fill="d",
-            @click="selectColor(i)")
+  div
+    svg(width="100vw", height="100vh")
+     g(@mousedown="initDraw", @mousemove="draw", @mouseup="stopDraw")
+      rect(:x="svgSize.width / 2 - svgSize.width /2 * 0.85", :y="svgSize.height /2 - svgSize.height /2 * 0.85" width="85%",
+            height="85%", fill="white", stroke="grey", stroke-width="3")
+      polyline(:class="{drawing: true}",
+              :style="{'stroke': selectedColor}",
+              :points="path", fill="none", stroke-linejoin="round")
+      polyline(v-for="(d, i) in pathCollection", :class="{drawing: true}",
+       :style="{'stroke': usedColors[i], 'stroke-dasharray': pathLength[i], 'stroke-dashoffset': animator}",
+       :points="pathCollection[i]", fill="none", stroke-linejoin="round")
+
+     g
+      circle(cx="50", cy="20%", r="20", stroke="grey", stroke-width="2" fill="white", @click="play")
+      circle(v-for="(d, i) in colors", cx="50", :cy="circlesY(i)", r="20", stroke="grey", stroke-width="2", :fill="d",
+              @click="selectColor(i)")
+    p {{animator}}
 </template>
 
 <script>
@@ -21,15 +27,21 @@ export default {
       path: '',
       drag: false,
       animate: false,
-      pathLength: 0,
+      pathLength: [],
       colors: ['#83AE9B', '#C8C8A9', '#F9CDAE', '#F69A9A', '#EF4566'],
-      selectedColor: '#000000'
+      selectedColor: '#000000',
+      usedColors: [],
+      pathCollection: []
     }
   },
 
   computed: {
-    time () {
-      return this.animate ? this.pathLength - (this.$store.state.time * 0.1) % this.pathLength : 0
+    animator () {
+      let test
+      this.pathLength.forEach(el => {
+        test = el - (this.$store.state.time * 0.1) % el
+      })
+      return test
     },
     svgSize () {
       return {
@@ -52,10 +64,12 @@ export default {
         this.points.push(x + ',' + y)
         this.path = this.points.join(' ')
       }
-      this.pathLength = this.$el.querySelector('.drawing').getTotalLength()
-      console.log(this.pathLength)
     },
     stopDraw () {
+      this.pathLength.push(this.$el.querySelector('.drawing').getTotalLength())
+      this.pathCollection.push(this.path)
+      this.usedColors.push(this.selectedColor)
+      this.path = ''
       this.drag = false
     },
     play () {
@@ -76,7 +90,7 @@ export default {
     position: absolute;
     top: 0;
     right: 0;
-     bottom: 0;
+    bottom: 0;
     left: 0;
   }
   .drawing {
