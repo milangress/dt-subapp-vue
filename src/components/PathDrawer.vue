@@ -19,85 +19,84 @@
 </template>
 
 <script>
-
-export default {
-  data () {
-    return {
-      points: [],
-      path: '',
-      drag: false,
-      animate: false,
-      pathLength: [],
-      colors: ['#83AE9B', '#C8C8A9', '#F9CDAE', '#F69A9A', '#EF4566'],
-      selectedColor: '#000000',
-      usedColors: [],
-      pathCollection: [],
-      dashOffset: [],
-      animations: []
-    }
-  },
-
-  computed: {
-    animator () {
-      return this.animate ? this.dashOffset.map((el) => {
-        el = el - (this.$store.state.time * 0.1) % el
-        return el
-      }) : 0
-    },
-    svgSize () {
+  export default {
+    data () {
       return {
-        width: window.innerWidth,
-        height: window.innerHeight
+        points: [],
+        path: '',
+        drag: false,
+        animate: false,
+        pathLength: [],
+        colors: ['#83AE9B', '#C8C8A9', '#F9CDAE', '#F69A9A', '#EF4566'],
+        selectedColor: '#000000',
+        usedColors: [],
+        pathCollection: [],
+        dashOffset: [],
+        animations: []
       }
-    }
-  },
-  /* watch: {
-    animator: function (animprocess) {
-      let index
-      index = animprocess.findIndex(el => el < 5)
-      if (index >= 0) {
-        this.animations[index] = false
-      }
-    }
-  }, */
-  methods: {
+    },
 
-    initDraw () {
-      this.drag = true
-      this.path = ''
-      this.points = []
-    },
-    draw (event) {
-      let x = event.clientX
-      let y = event.clientY
-      if (this.drag) {
-        this.points.push(x + ',' + y)
-        this.path = this.points.join(' ')
+    computed: {
+      animator () {
+        return this.animate ? this.dashOffset.map((el) => {
+          el = el - (this.$store.state.time * 0.1) % el
+          return el
+        }) : 0
+      },
+      svgSize () {
+        return {
+          width: window.innerWidth,
+          height: window.innerHeight
+        }
       }
     },
-    stopDraw () {
-      this.pathLength.push(this.$el.querySelector('.drawing').getTotalLength())
-      this.dashOffset.push(this.$el.querySelector('.drawing').getTotalLength())
-      this.animations.push(true)
-      this.pathCollection.push(this.path)
-      this.usedColors.push(this.selectedColor)
-      this.path = ''
-      this.drag = false
-    },
-    play () {
-      this.animate = true
-    },
-    stop () {
-      this.animate = false
-    },
-    circlesY (i) {
-      return this.svgSize.height / 2 * 0.85 + i * 50
-    },
-    selectColor (i) {
-      this.selectedColor = this.colors[i]
+    /* watch: {
+      animator: function (animprocess) {
+        let index
+        index = animprocess.findIndex(el => el < 5)
+        if (index >= 0) {
+          this.animations[index] = false
+        }
+      }
+    }, */
+    methods: {
+
+      initDraw () {
+        this.drag = true
+        this.path = ''
+        this.points = []
+      },
+      draw (event) {
+        let x = event.clientX
+        let y = event.clientY
+        if (this.drag) {
+          this.points.push(x + ',' + y)
+          this.path = this.points.join(' ')
+        }
+      },
+      stopDraw () {
+        this.pathLength.push(this.$el.querySelector('.drawing').getTotalLength())
+        this.dashOffset.push(this.$el.querySelector('.drawing').getTotalLength())
+        this.animations.push(true)
+        this.pathCollection.push(this.path)
+        this.usedColors.push(this.selectedColor)
+        this.path = ''
+        this.drag = false
+      },
+      play () {
+        this.animate = true
+      },
+      stop () {
+        this.animate = false
+      },
+      circlesY (i) {
+        return this.svgSize.height / 2 * 0.85 + i * 50
+      },
+      selectColor (i) {
+        this.selectedColor = this.colors[i]
+      }
     }
   }
-}
 </script>
 
 <style scoped>
