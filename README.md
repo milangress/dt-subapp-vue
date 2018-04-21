@@ -1,5 +1,7 @@
 # Digitanz Vue App
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/digitanz/dt-subapp-vue.svg)](https://greenkeeper.io/)
+
 > Graphical sub-app
 
 <p align="center"><a href="https://xkcd.com/851_make_it_better/" target="_blank" title="Oh yeah, click to make it better!"><img width="573" height="158" src="https://imgs.xkcd.com/comics/na.png" /></a></p>
