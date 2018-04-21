@@ -28,11 +28,14 @@
         }
       },
       lines () {
+        /*
         let nextTs = Math.round(this.$store.state.time / 300)
         if (nextTs > this.currentTime) {
           skeleton.rotate()
           this.currentTime = nextTs
         }
+        */
+        if (Math.round(this.$store.state.time % 2) === 0) skeleton.rotate()
         return skeleton.getEdges()
       }
     },

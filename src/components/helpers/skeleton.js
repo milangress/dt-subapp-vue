@@ -1,7 +1,7 @@
 const PI = Math.PI
 const TWO_PI = Math.PI * 2
 const HALF_PI = Math.PI / 2.0
-const QUARTER_PI = Math.PI / 4.0
+// const QUARTER_PI = Math.PI / 4.0
 const PI_12 = Math.PI / 12
 
 class Joint {
@@ -85,7 +85,7 @@ class Skeleton {
     Joint.link(hip, spine)
     let centerShoulder = new Joint('center-shoulder', 0, [PI_12 * -2, PI_12 * 2], 50)
     Joint.link(spine, centerShoulder)
-    let head = new Joint('head', 0, [- PI_12 * 3, PI_12 * 3], 30)
+    let head = new Joint('head', 0, [-PI_12 * 3, PI_12 * 3], 30)
     Joint.link(centerShoulder, head)
     let leftShoulder = new Joint('left-shoulder', -HALF_PI, [-HALF_PI - PI_12, -HALF_PI + PI_12], 30)
     Joint.link(centerShoulder, leftShoulder)

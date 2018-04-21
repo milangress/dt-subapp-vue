@@ -42,11 +42,13 @@
         }
       },
       lines () {
-        let nextTs = Math.round(this.$store.state.time / 300)
+        // let nextTs = Math.round(this.$store.state.time / 300)
+        if (Math.round(this.$store.state.time % 20) === 0) skeleton.rotate()
+        /*
         if (nextTs > this.currentTime) {
-          skeleton.rotate()
           this.currentTime = nextTs
         }
+        */
         let skeletonLines = skeleton.getEdges()
         let x = Math.round(this.grid.columns / 2)
         let y = Math.round(this.grid.rows / 2)
@@ -77,7 +79,7 @@
   }
   line {
     stroke: blue;
-    stroke-width: 20;
+    stroke-width: 20px;
     stroke-linecap: round;
   }
   line:hover {
