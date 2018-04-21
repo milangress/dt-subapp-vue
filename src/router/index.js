@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import DanceOMat from '@/components/DanceOMat'
-import MrGriddle from '@/components/MrGriddle'
+import poseTool from '@/components/pose-tool'
 import RhythmAndShoes from '@/components/RhythmAndShoes'
 import PathDrawer from '@/components/PathDrawer'
 import Login from '@/components/Login'
@@ -13,7 +13,7 @@ export default new Router({
     {
       path: '/mr-griddle',
       name: 'MrGriddle',
-      component: MrGriddle
+      component: poseTool.MrGriddle
     },
     {
       path: '/rhythm-shoes',
