@@ -8,37 +8,25 @@
       rect(width="100%", height="100%", fill="url(#cell-pattern)")
       line(v-for="(line, i) in lines", :key="`line-${i}`",
            :x1="line.x1 * gridCell.width", :y1="line.y1 * gridCell.height",
-           :x2="line.x2 * gridCell.width", :y2="line.y2 * gridCell.height",
-           @click="randomizeGrid")
+           :x2="line.x2 * gridCell.width", :y2="line.y2 * gridCell.height")
 </template>
 
 <script>
-  // import Skeleton from '@/components/helpers/skeleton'
+  import Skeleton from '@/components/helpers/skeleton'
 
-  // const skeleton = new Skeleton()
+  const skeleton = new Skeleton()
 
-  const DIRECTIONS = [
-    {x: 0, y: -1},
-    {x: 1, y: -1},
-    {x: 1, y: 0},
-    {x: 1, y: 1},
-    {x: 0, y: 1},
-    {x: -1, y: 1},
-    {x: -1, y: 0},
-    {x: -1, y: -1}
-  ]
   export default {
     data () {
       return {
         grid: {
-          columns: 24,
-          rows: 16
+          columns: 36,
+          rows: 12
         },
-        lines: []
+        currentTime: 0
       }
     },
     mounted () {
-      this.randomizeGrid()
     },
     computed: {
       svgSize () {
@@ -52,23 +40,29 @@
           width: this.svgSize.width / this.grid.columns,
           height: this.svgSize.height / this.grid.rows
         }
+      },
+      lines () {
+        let nextTs = Math.round(this.$store.state.time / 300)
+        if (nextTs > this.currentTime) {
+          skeleton.rotate()
+          this.currentTime = nextTs
+        }
+        let skeletonLines = skeleton.getEdges()
+        let x = Math.round(this.grid.columns / 2)
+        let y = Math.round(this.grid.rows / 2)
+        let w = this.gridCell.width
+        let h = this.gridCell.height
+        return skeletonLines.map(line => {
+          return {
+            x1: x + Math.round(line.x1 / w),
+            y1: y + Math.round(line.y1 / h),
+            x2: x + Math.round(line.x2 / w),
+            y2: y + Math.round(line.y2 / h)
+          }
+        })
       }
     },
     methods: {
-      randomizeGrid () {
-        let lines = []
-        for (let i = 0; i < 100; i++) {
-          let line = {
-            x1: 1 + Math.round(Math.random() * (this.grid.columns - 2)),
-            y1: 1 + Math.round(Math.random() * (this.grid.rows - 2))
-          }
-          let dir = DIRECTIONS[Math.floor(Math.random() * 8)]
-          line.x2 = line.x1 + 2 * dir.x
-          line.y2 = line.y1 + 2 * dir.y
-          lines.push(line)
-        }
-        this.lines = lines
-      }
     }
   }
 </script>
