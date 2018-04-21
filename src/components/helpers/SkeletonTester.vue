@@ -28,7 +28,7 @@
         }
       },
       lines () {
-        let nextTs = Math.round(this.$store.state.time / 1000)
+        let nextTs = Math.round(this.$store.state.time / 300)
         if (nextTs > this.currentTime) {
           skeleton.rotate()
           this.currentTime = nextTs
