@@ -1,33 +1,35 @@
-# diggerdance
+# Digitanz Vue App
 
-> dance, digger, dance!
+> Graphical sub-app
 
-[![algodance like nobody's clocking](https://media.giphy.com/media/3ohzdI6Tj71ADYsLrW/giphy.gif)](https://giphy.com/gifs/aggro-hardcore-dancing-3ohzdI6Tj71ADYsLrW)
+<p align="center"><a href="https://xkcd.com/851_make_it_better/" target="_blank" title="Oh yeah, click to make it better!"><img width="573" height="158" src="https://imgs.xkcd.com/comics/na.png" /></a></p>
 
-## Build Setup
+[![Build status](https://secure.travis-ci.org/digitanz/dt-subapp-vue.svg)](https://travis-ci.org/digitanz/dt-subapp-vue)
+[![Dependency Status](https://tidelift.com/badges/github/digitanz/dt-subapp-vue?style=flat)](https://tidelift.com/repo/github/digitanz/dt-subapp-vue)
 
-``` bash
-# install dependencies
-npm install
+## Develop
 
-# serve with hot reload at localhost:8080
+During development start:
+
+```shell
 npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## Build
+
+Update `dist` with:
+
+```shell
+npm run build
+```
+
+## Stability
+
+[![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
+
+This project is still under active development and subject to non-backwards compatible changes, or even removal of features, in any future version.
 
 ## License
 
-:copyright: 2018 [Motion Bank](https://github.com/motionbank)
-
-This program is free software. It comes without any warranty, to the extent permitted by applicable law.
-
-You can redistribute it and/or modify it under the
-terms of the Do What The Fuck You Want To Public License, Version 2,
-as published by Sam Hocevar. See [http://www.wtfpl.net](http://www.wtfpl.net) for more details.
+:copyright: 2018 Mainz University of Applied Sciences (Motion Bank Project) – 
+Released under the [MIT](https://github.com/digitanz/dt-subapp-vue/blob/master/LICENSE) license
