@@ -13,6 +13,10 @@
 </template>
 
 <script>
+  // import Skeleton from '@/components/helpers/skeleton'
+
+  // const skeleton = new Skeleton()
+
   const DIRECTIONS = [
     {x: 0, y: -1},
     {x: 1, y: -1},
@@ -27,8 +31,8 @@
     data () {
       return {
         grid: {
-          columns: 12,
-          rows: 8
+          columns: 24,
+          rows: 16
         },
         lines: []
       }
@@ -59,8 +63,8 @@
             y1: 1 + Math.round(Math.random() * (this.grid.rows - 2))
           }
           let dir = DIRECTIONS[Math.floor(Math.random() * 8)]
-          line.x2 = line.x1 + dir.x
-          line.y2 = line.y1 + dir.y
+          line.x2 = line.x1 + 2 * dir.x
+          line.y2 = line.y1 + 2 * dir.y
           lines.push(line)
         }
         this.lines = lines

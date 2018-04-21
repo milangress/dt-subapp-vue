@@ -1,5 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
+import SkeletonTest from '@/components/helpers/SkeletonTester'
+
 import DanceOMat from '@/components/DanceOMat'
 import poseTool from '@/components/pose-tool'
 import RhythmAndShoes from '@/components/RhythmAndShoes'
@@ -10,6 +13,11 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/tests/skeleton',
+      name: 'SkeletonTest',
+      component: SkeletonTest
+    },
     {
       path: '/mr-griddle',
       name: 'MrGriddle',
