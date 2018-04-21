@@ -20,8 +20,8 @@
     data () {
       return {
         grid: {
-          columns: 36,
-          rows: 12
+          columns: 9,
+          rows: 16
         },
         currentTime: 0
       }
