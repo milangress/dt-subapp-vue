@@ -1,5 +1,5 @@
 <template lang="pug">
-  svg(width="100vw", height="100vh")
+  svg(width="100vw", height="100vh", @mousemove="doResizeCell", @mouseup="stopResizeCell")
     defs
       pattern(id="cell-pattern", :width="gridCell.width", :height="gridCell.height", patternUnits="userSpaceOnUse")
         path(:d="`M ${gridCell.width} 0 L 0 0 0 ${gridCell.height}`",
@@ -9,6 +9,10 @@
       line(v-for="(line, i) in lines", :key="`line-${i}`",
            :x1="line.x1 * gridCell.width", :y1="line.y1 * gridCell.height",
            :x2="line.x2 * gridCell.width", :y2="line.y2 * gridCell.height")
+      ellipse#resize-handle(
+        :cx="gridCell.width", :cy="gridCell.height",
+        rx="7", ry="7",
+        @mousedown="initResizeCell", :class="{resizing: resizingCell}")
 </template>
 
 <script>
@@ -23,10 +27,11 @@
           columns: 9,
           rows: 16
         },
-        currentTime: 0
+        currentTime: 0,
+        resizingCell: false
       }
     },
-    mounted () {
+    mouted () {
     },
     computed: {
       svgSize () {
@@ -42,13 +47,8 @@
         }
       },
       lines () {
-        // let nextTs = Math.round(this.$store.state.time / 300)
         if (Math.round(this.$store.state.time % 20) === 0) skeleton.rotate()
-        /*
-        if (nextTs > this.currentTime) {
-          this.currentTime = nextTs
-        }
-        */
+
         let skeletonLines = skeleton.getEdges()
         let x = Math.round(this.grid.columns / 2)
         let y = Math.round(this.grid.rows / 2)
@@ -65,6 +65,18 @@
       }
     },
     methods: {
+      initResizeCell () {
+        this.resizingCell = true
+      },
+      doResizeCell (event) {
+        if (this.resizingCell) {
+          this.grid.columns = Math.round(this.svgSize.width / event.clientX)
+          this.grid.rows = Math.round(this.svgSize.height / event.clientY)
+        }
+      },
+      stopResizeCell () {
+        this.resizingCell = false
+      }
     }
   }
 </script>
@@ -84,5 +96,13 @@
   }
   line:hover {
     stroke: red;
+  }
+  #resize-handle {
+    fill: white;
+    stroke: black;
+    stroke-width: 1;
+  }
+  #resize-handle:hover, #resize-handle.resizing {
+    fill: black;
   }
 </style>
