@@ -1,5 +1,6 @@
 <template lang="pug">
-  svg(width="100vw", height="100vh", @mousemove="doResizeCell", @mouseup="stopResizeCell")
+  svg(width="100vw", height="100vh",
+    @mousemove="doResizeCell", @mouseup="stopResizeCell")
     defs
       pattern(id="cell-pattern", :width="gridCell.width", :height="gridCell.height", patternUnits="userSpaceOnUse")
         path(:d="`M ${gridCell.width} 0 L 0 0 0 ${gridCell.height}`",
@@ -11,7 +12,7 @@
            :x2="line.x2 * gridCell.width", :y2="line.y2 * gridCell.height")
       ellipse#resize-handle(
         :cx="gridCell.width", :cy="gridCell.height",
-        rx="7", ry="7",
+        rx="4", ry="4",
         @mousedown="initResizeCell", :class="{resizing: resizingCell}")
 </template>
 
@@ -28,7 +29,10 @@
           rows: 16
         },
         currentTime: 0,
-        resizingCell: false
+        resizingCell: false,
+        lastFrameTime: -1,
+        frameLength: 1000 / 1.0,
+        lines: []
       }
     },
     mouted () {
@@ -46,22 +50,15 @@
           height: this.svgSize.height / this.grid.rows
         }
       },
-      lines () {
-        if (Math.round(this.$store.state.time % 20) === 0) skeleton.rotate()
-
-        let skeletonLines = skeleton.getEdges()
-        let x = Math.round(this.grid.columns / 2)
-        let y = Math.round(this.grid.rows / 2)
-        let w = this.gridCell.width
-        let h = this.gridCell.height
-        return skeletonLines.map(line => {
-          return {
-            x1: x + Math.round(line.x1 / w),
-            y1: y + Math.round(line.y1 / h),
-            x2: x + Math.round(line.x2 / w),
-            y2: y + Math.round(line.y2 / h)
-          }
-        })
+      nextFrame () {
+        return (this.$store.state.time - this.lastFrameTime) >= this.frameLength
+      }
+    },
+    watch: {
+      nextFrame () {
+        this.lastFrameTime = this.$store.state.time
+        skeleton.rotate()
+        this.updateSkeleton()
       }
     },
     methods: {
@@ -72,10 +69,29 @@
         if (this.resizingCell) {
           this.grid.columns = Math.round(this.svgSize.width / event.clientX)
           this.grid.rows = Math.round(this.svgSize.height / event.clientY)
+          this.updateSkeleton()
         }
       },
       stopResizeCell () {
         this.resizingCell = false
+      },
+      handleKeyUp (event) {
+        console.log(event)
+      },
+      updateSkeleton () {
+        let skeletonLines = skeleton.getEdges()
+        let x = Math.round(this.grid.columns / 2)
+        let y = Math.round(this.grid.rows / 2)
+        let w = this.gridCell.width
+        let h = this.gridCell.height
+        this.lines = skeletonLines.map(line => {
+          return {
+            x1: x + Math.round(line.x1 / w),
+            y1: y + Math.round(line.y1 / h),
+            x2: x + Math.round(line.x2 / w),
+            y2: y + Math.round(line.y2 / h)
+          }
+        })
       }
     }
   }
@@ -99,10 +115,10 @@
   }
   #resize-handle {
     fill: white;
-    stroke: black;
+    stroke: gray;
     stroke-width: 1;
   }
   #resize-handle:hover, #resize-handle.resizing {
-    fill: black;
+    fill: gray;
   }
 </style>
