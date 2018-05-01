@@ -7,6 +7,7 @@ import DanceOMat from '@/components/DanceOMat'
 import poseTool from '@/components/pose-tool'
 import RhythmAndShoes from '@/components/RhythmAndShoes'
 import PathDrawer from '@/components/PathDrawer'
+import LostInSpace from '@/components/LostInSpace'
 import Login from '@/components/Login'
 
 Vue.use(Router)
@@ -22,6 +23,11 @@ export default new Router({
       path: '/mr-griddle',
       name: 'MrGriddle',
       component: poseTool.MrGriddle
+    },
+    {
+      path: '/lost-in-space',
+      name: 'LostInSpace',
+      component: LostInSpace
     },
     {
       path: '/rhythm-shoes',
