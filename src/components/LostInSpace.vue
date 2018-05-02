@@ -1,10 +1,11 @@
 <template lang="pug">
-    svg(width="100vw", height="100vh", @mouseup="addParticle")
+  svg(width="100vw", height="100vh", @mouseup="addParticle")
       g#force-field(v-if="showForceField")
         template(v-for="(cell, i) in forceField")
           rect(:x="(i % forceFieldDimensions.columns) * forceFieldDimensions.width",
             :y="Math.floor(i / forceFieldDimensions.columns) * forceFieldDimensions.height",
-            :width="forceFieldDimensions.width", :height="forceFieldDimensions.height",
+            :width="forceFieldDimensions.width",
+            :height="forceFieldDimensions.height",
             :fill="radiansToColor(cell)")
           polygon(points="10,0 -10,-10 0,0 -10,10",
             fill="rgba(255, 255, 255, 0.7)",
@@ -26,7 +27,7 @@
     name: 'LostInSpace',
     data () {
       return {
-        numberOfParticles: 0,
+        numberOfParticles: 200,
         showForceField: true,
         showShapes: true,
         frameLength: 1000 / 30.0,
@@ -47,9 +48,10 @@
 
       let points = []
       let padding = 150
+      let numPoints = 25
 
-      Array(100).fill(0).map((v, i) => {
-        let ii = i / 100.0
+      Array(numPoints).fill(0).map((v, i) => {
+        let ii = i / (numPoints - 1.0)
         points.push({
           x: padding + ii * (window.innerWidth - 2 * padding),
           y: window.innerHeight - padding - ii * (window.innerHeight - 2 * padding)
@@ -60,8 +62,8 @@
       })
 
       points = []
-      Array(100).fill(0).map((v, i) => {
-        let ii = i / 100.0
+      Array(numPoints).fill(0).map((v, i) => {
+        let ii = i / (numPoints - 1.0)
         points.push({
           x: padding + ii * (window.innerWidth - 2 * padding),
           y: padding + ii * (window.innerHeight - 2 * padding)
@@ -123,8 +125,8 @@
           this.particles = this.particles.map((particle, i) => {
             let rad = this.getForceFieldValue(particle.position.x, particle.position.y)
 
-            let forceX = Math.cos(rad) * 0.3
-            let forceY = Math.sin(rad) * 0.3
+            let forceX = Math.cos(rad) * 0.05
+            let forceY = Math.sin(rad) * 0.05
 
             particle.direction.x += forceX
             particle.direction.y += forceY
@@ -135,10 +137,10 @@
               let distX = particle2.position.x - particle.position.x
               let distY = particle2.position.y - particle.position.y
               let dist = Math.sqrt(distX * distX + distY * distY)
-              if (dist < 40) {
+              if (dist < 30) {
                 let rad2 = Math.atan2(distY, distX)
-                let forceX = Math.cos(rad2) * 0.6
-                let forceY = Math.sin(rad2) * 0.6
+                let forceX = Math.cos(rad2) * 0.5
+                let forceY = Math.sin(rad2) * 0.5
                 particle.direction.x -= forceX
                 particle.direction.y -= forceY
                 particle2.direction.x += forceX
@@ -152,7 +154,7 @@
                 let distX = point.x - particle.position.x
                 let distY = point.y - particle.position.y
                 let dist = Math.sqrt(distX * distX + distY * distY)
-                if (dist < 50) {
+                if (dist < 100) {
                   let rad2 = Math.atan2(distY, distX)
                   let forceX = Math.cos(rad2) * 0.1
                   let forceY = Math.sin(rad2) * 0.1
