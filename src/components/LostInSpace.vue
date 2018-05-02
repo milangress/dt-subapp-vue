@@ -2,14 +2,32 @@
   svg(width="100vw", height="100vh", @mouseup="addParticle")
     defs
       g#shape-protos
-        g
+        g#diagonal-lines-1
           line(x1="-50", y1="-50", x2="50", y2="50")
-        g
-          ellipse(cx="0", cy="0", rx="50", ry="50")
-        g
+        g#diagonal-lines-2
+          line(x1="-50", y1="-50", x2="50", y2="50")
+          line(x1="50",  y1="-50", x2="-50", y2="50")
+        g#two-triangles-1
+          polygon(points="-50,-50 50,-50 0,0")
+          polygon(points="-50,50 50,50 0,0")
+        g#two-triangles-2
+          polygon(points="-50,-50 -50,50 0,0")
+          polygon(points="50,-50 50,50 0,0")
+        g#two-triangles-3
+          polygon(points="-50,-50 50,-50 50,50")
+        g#rect-1
+          rect(x="-60", y="-60", width="120", height="120")
+        g#ellipses-1
+          ellipse(cx="0", cy="0", rx="60", ry="60")
+        g#ellipses-2
+          ellipse(cx="0", cy="0", rx="40", ry="40")
+        g#ellipses-3
+          ellipse(cx="0", cy="0", rx="20", ry="20")
+        g#ellipses-4
+          ellipse(cx="-30", cy="-30", rx="20", ry="20")
+          ellipse(cx="25", cy="25", rx="40", ry="40")
+        g#triangle-1
           polygon(points="3,50 -43,-24 43,-25")
-        g
-          rect(x="-50", y="-50", width="100", height="100")
     g#force-field(v-if="showForceField")
       template(v-for="(cell, i) in forceField")
         rect(:x="(i % forceFieldDimensions.columns) * forceFieldDimensions.width",
@@ -20,8 +38,8 @@
         polygon(points="10,0 -10,-10 0,0 -10,10",
           fill="rgba(255, 255, 255, 0.7)",
           :transform="`translate(${forceFieldDimensions.width / 2 + (i % forceFieldDimensions.columns) * forceFieldDimensions.width},${forceFieldDimensions.height / 2 + Math.floor(i / forceFieldDimensions.columns) * forceFieldDimensions.height}) rotate(${(cell / (Math.PI * 2)) * 360}) scale(${forceFieldDimensions.width / 70.0})`")
-    g#shapes(v-if="showShapes")
-      template(v-for="shape in shapes")
+    g#shapes
+      template(v-if="showShapes", v-for="shape in shapes")
         template(v-if="shape.points.length > 1")
           polygon(
             :points="shape.points.map(p=>{return `${p.x},${p.y} `})"
@@ -30,6 +48,10 @@
             <!--fill="yellow", stroke="blue", stroke-width="3")-->
         template(v-else-if="showShapeFilling")
           ellipse(:cx="shape.points[0].x", :cy="shape.points[0].y", rx="10", ry="10", fill="white", stroke="black", stroke-width="2")
+      use(x="0", y="0",
+        :href="`#${currentShapeId}`",
+        :transform="`translate(${svgSize.width/2},${svgSize.height/2}) scale(${svgSize.scale})`",
+        fill="none", stroke="rgb(120,120,120)", stroke-width="4")
     g#particles
       template(v-for="particle in particles")
         ellipse(:cx="particle.position.x", :cy="particle.position.y", rx="10", ry="10")
@@ -40,16 +62,18 @@
     name: 'LostInSpace',
     data () {
       return {
-        showShapeFilling: false,
+        showShapeFilling: true,
         showForceField: false,
-        showShapes: true,
+        showShapes: false,
         forceFieldCellSize: 60,
-        currentShape: 0,
         numberOfParticles: 100,
         frameLength: 1000 / 30.0,
         lastFrameTime: -1,
+        currentShape: -1,
         shapeProtos: [],
         shapes: [],
+        shapeIds: [],
+        currentShapeId: '#ellipses-1',
         particles: [],
         forceFieldDimensions: {
           columns: -1,
@@ -60,8 +84,8 @@
         forceField: [],
         shapePolygonizerDetail: 10,
         shapeFilling: {
-          width: 9,
-          height: 9
+          width: 11,
+          height: 11
         }
       }
     },
@@ -74,16 +98,19 @@
       window.addEventListener('keyup', this.handleKey)
 
       const shapeProtos = this.$el.querySelectorAll('#shape-protos > g')
-      const winHalfWidth = window.innerWidth / 2
-      const winHalfHeight = window.innerHeight / 2
-      const smallestLengthFull = Math.min(window.innerWidth, window.innerHeight)
+
+      const winHalfWidth = this.svgSize.width / 2
+      const winHalfHeight = this.svgSize.height / 2
+      const smallestLengthFull = Math.min(this.svgSize.width, this.svgSize.height)
       const smallestLength = smallestLengthFull * 0.7
 
       const fillWidth = this.shapeFilling.width
       const fillHeight = this.shapeFilling.height
 
+      this.shapeIds = []
       this.shapeProtos = Array(shapeProtos.length).fill(0).map((v2, l) => {
         let proto = shapeProtos[l]
+        that.shapeIds.push(proto.id)
         let shapes = Array(proto.children.length).fill(0).map((v1, i) => {
           let svgEl = proto.children[i]
           let pathLen = svgEl.getTotalLength()
@@ -104,8 +131,8 @@
           let w = fillWidth
           let h = fillHeight
           Array(w * h).fill(0).forEach((v4, m) => {
-            let x = ((m % w) / w) * 100.0 - 50
-            let y = (Math.round(m / w) / w) * 100.0 - 50
+            let x = ((m % w) / w) * 150.0 - 75
+            let y = (Math.round(m / w) / w) * 150.0 - 75
             let p = {
               x: winHalfWidth + (x / 100.0 * smallestLength),
               y: winHalfHeight + (y / 100.0 * smallestLength)
@@ -132,9 +159,13 @@
     },
     computed: {
       svgSize () {
+        const smallestLengthFull = Math.min(window.innerWidth, window.innerHeight)
+        const smallestLength = smallestLengthFull * 0.7
         return {
           width: window.innerWidth,
-          height: window.innerHeight
+          height: window.innerHeight,
+          side: smallestLength,
+          scale: smallestLength / 100.0
         }
       },
       nextFrame () {
@@ -307,7 +338,9 @@
       nextShape () {
         this.currentShape++
         this.currentShape %= this.shapeProtos.length
+
         this.shapes = this.shapeProtos[this.currentShape]
+        this.currentShapeId = this.shapeIds[this.currentShape]
 
         this.updateShapes()
         this.updateForceField()
