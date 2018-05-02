@@ -77,20 +77,6 @@
       this.forceFieldDimensions.rows = Math.ceil(window.innerHeight / forceFieldCellSize)
       this.forceFieldDimensions.height = window.innerHeight / this.forceFieldDimensions.rows
 
-      // // random FF
-      // this.forceField = Array(forceFieldLength).fill(0).map(() => {
-      //   return Math.random() * Math.PI * 2
-      // })
-
-      // circular FF
-      // this.forceField = Array(forceFieldLength).fill(0).map((v, i) => {
-      //   let x = i % this.forceFieldDimensions.columns
-      //   let y = Math.round(i / this.forceFieldDimensions.columns)
-      //   let xDist = this.forceFieldDimensions.columns / 2 - x
-      //   let yDist = this.forceFieldDimensions.rows / 2 - y
-      //   return Math.atan2(yDist, xDist) + Math.PI / 2
-      // })
-
       this.particles = Array(this.numberOfParticles).fill(0).map(() => {
         return that.makeParticle()
       })
@@ -115,6 +101,22 @@
       }
     },
     methods: {
+      // randomForceField () {
+      //   // random FF
+      //   this.forceField = Array(forceFieldLength).fill(0).map(() => {
+      //     return Math.random() * Math.PI * 2
+      //   })
+      // },
+      // circularForceField () {
+      //   // circular FF
+      //   this.forceField = Array(forceFieldLength).fill(0).map((v, i) => {
+      //     let x = i % this.forceFieldDimensions.columns
+      //     let y = Math.round(i / this.forceFieldDimensions.columns)
+      //     let xDist = this.forceFieldDimensions.columns / 2 - x
+      //     let yDist = this.forceFieldDimensions.rows / 2 - y
+      //     return Math.atan2(yDist, xDist) + Math.PI / 2
+      //   })
+      // },
       updateParticles () {
         let that = this
         if (this.particles) {
