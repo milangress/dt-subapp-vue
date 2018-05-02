@@ -22,14 +22,17 @@
           :transform="`translate(${forceFieldDimensions.width / 2 + (i % forceFieldDimensions.columns) * forceFieldDimensions.width},${forceFieldDimensions.height / 2 + Math.floor(i / forceFieldDimensions.columns) * forceFieldDimensions.height}) rotate(${(cell / (Math.PI * 2)) * 360}) scale(${forceFieldDimensions.width / 70.0})`")
     g#shapes(v-if="showShapes")
       template(v-for="shape in shapes")
-        polygon(
-          :points="shape.points.map(p=>{return `${p.x},${p.y} `})"
-          :fill="'none' || shape.fill || 'black'", stroke="black", stroke-width="2")
-        <!--ellipse(:cx="shape.center.x", :cy="shape.center.y", :rx="5", :ry="5",-->
-          <!--fill="yellow", stroke="blue", stroke-width="3")-->
+        template(v-if="shape.points.length > 1")
+          polygon(
+            :points="shape.points.map(p=>{return `${p.x},${p.y} `})"
+            :fill="'none' || shape.fill || 'black'", stroke="black", stroke-width="5")
+          <!--ellipse(:cx="shape.center.x", :cy="shape.center.y", :rx="5", :ry="5",-->
+            <!--fill="yellow", stroke="blue", stroke-width="3")-->
+        template(v-else-if="showShapeFilling")
+          ellipse(:cx="shape.points[0].x", :cy="shape.points[0].y", rx="10", ry="10", fill="white", stroke="black", stroke-width="2")
     g#particles
       template(v-for="particle in particles")
-        ellipse(:cx="particle.position.x", :cy="particle.position.y", rx="5", ry="5")
+        ellipse(:cx="particle.position.x", :cy="particle.position.y", rx="10", ry="10")
 </template>
 
 <script>
@@ -37,11 +40,15 @@
     name: 'LostInSpace',
     data () {
       return {
-        numberOfParticles: 1,
-        showForceField: true,
+        showShapeFilling: false,
+        showForceField: false,
         showShapes: true,
+        forceFieldCellSize: 60,
+        currentShape: 0,
+        numberOfParticles: 100,
         frameLength: 1000 / 30.0,
         lastFrameTime: -1,
+        shapeProtos: [],
         shapes: [],
         particles: [],
         forceFieldDimensions: {
@@ -50,24 +57,38 @@
           width: -1,
           height: -1
         },
-        forceField: []
+        forceField: [],
+        shapePolygonizerDetail: 10,
+        shapeFilling: {
+          width: 9,
+          height: 9
+        }
       }
+    },
+    beforeDestroy () {
+      window.removeEventListener('keyup', this.handleKey)
     },
     mounted () {
       const that = this
+
+      window.addEventListener('keyup', this.handleKey)
 
       const shapeProtos = this.$el.querySelectorAll('#shape-protos > g')
       const winHalfWidth = window.innerWidth / 2
       const winHalfHeight = window.innerHeight / 2
       const smallestLengthFull = Math.min(window.innerWidth, window.innerHeight)
-      const smallestLength = smallestLengthFull - smallestLengthFull / 5 // -5%
+      const smallestLength = smallestLengthFull * 0.7
 
-      shapeProtos.forEach(proto => {
+      const fillWidth = this.shapeFilling.width
+      const fillHeight = this.shapeFilling.height
+
+      this.shapeProtos = Array(shapeProtos.length).fill(0).map((v2, l) => {
+        let proto = shapeProtos[l]
         let shapes = Array(proto.children.length).fill(0).map((v1, i) => {
           let svgEl = proto.children[i]
           let pathLen = svgEl.getTotalLength()
-          let amount = 40
-          let step = pathLen / (amount-1)
+          let amount = this.shapePolygonizerDetail
+          let step = pathLen / (amount - 1)
           let points = Array(amount).fill(0).map((v, n) => {
             let len = step * n
             let point = svgEl.getPointAtLength(len)
@@ -78,14 +99,32 @@
           })
           return {points: points}
         })
-        that.shapes = that.shapes.concat(shapes)
+        let fillShapes = []
+        shapes.forEach(shape => {
+          let w = fillWidth
+          let h = fillHeight
+          Array(w * h).fill(0).forEach((v4, m) => {
+            let x = ((m % w) / w) * 100.0 - 50
+            let y = (Math.round(m / w) / w) * 100.0 - 50
+            let p = {
+              x: winHalfWidth + (x / 100.0 * smallestLength),
+              y: winHalfHeight + (y / 100.0 * smallestLength)
+            }
+            if (that.isPointInPolygon(p, shape.points)) {
+              fillShapes.push({points: [p]})
+            }
+          })
+        })
+        shapes = shapes.concat(fillShapes)
+        return shapes
       })
 
-      let forceFieldCellSize = 60
-      this.forceFieldDimensions.columns = Math.ceil(window.innerWidth / forceFieldCellSize)
+      this.forceFieldDimensions.columns = Math.ceil(window.innerWidth / this.forceFieldCellSize)
       this.forceFieldDimensions.width = window.innerWidth / this.forceFieldDimensions.columns
-      this.forceFieldDimensions.rows = Math.ceil(window.innerHeight / forceFieldCellSize)
+      this.forceFieldDimensions.rows = Math.ceil(window.innerHeight / this.forceFieldCellSize)
       this.forceFieldDimensions.height = window.innerHeight / this.forceFieldDimensions.rows
+
+      this.nextShape()
 
       this.particles = Array(this.numberOfParticles).fill(0).map(() => {
         return that.makeParticle()
@@ -105,8 +144,6 @@
     watch: {
       nextFrame () {
         this.lastFrameTime = this.$store.state.time
-        this.updateShapes()
-        this.updateForceField()
         this.updateParticles()
       }
     },
@@ -158,14 +195,16 @@
 
             // attract to shapes (-points)
             that.shapes.map(shape => {
+              let isFilling = shape.points.length === 1
               shape.points.map(point => {
                 let distX = point.x - particle.position.x
                 let distY = point.y - particle.position.y
                 let dist = Math.sqrt(distX * distX + distY * distY)
                 if (dist < 100) {
+                  let fac = isFilling ? 0.3 : 0.2
                   let rad2 = Math.atan2(distY, distX)
-                  let forceX = Math.cos(rad2) * 0.1
-                  let forceY = Math.sin(rad2) * 0.1
+                  let forceX = Math.cos(rad2) * fac
+                  let forceY = Math.sin(rad2) * fac
                   particle.direction.x += forceX
                   particle.direction.y += forceY
                 }
@@ -213,7 +252,7 @@
             x: Math.cos(rad),
             y: Math.sin(rad)
           },
-          velocity: 1 + Math.random() * 1
+          velocity: 1 + Math.random() * 2
         }
       },
       updateShapes () {
@@ -244,24 +283,54 @@
           let yDist = 0
 
           that.shapes.map(shape => {
-            shape.points.map(point => {
-              let sx = Math.round(point.x / that.forceFieldDimensions.width)
-              let sy = Math.round(point.y / that.forceFieldDimensions.height)
-              let xd = sx - x
-              let yd = sy - y
-              let dist = Math.sqrt(xd * xd + yd * yd)
-              let factor = 1
-              if (dist > 0) factor = 1 / (dist * dist * dist)
-              xDist += xd * factor
-              yDist += yd * factor
-            })
+            if (shape.points.length > 1) {
+              shape.points.map(point => {
+                let sx = Math.round(point.x / that.forceFieldDimensions.width)
+                let sy = Math.round(point.y / that.forceFieldDimensions.height)
+                let xd = sx - x
+                let yd = sy - y
+                let dist = Math.sqrt(xd * xd + yd * yd)
+                let factor = 1
+                if (dist > 0) factor = 1 / (dist * dist * dist)
+                xDist += xd * factor
+                yDist += yd * factor
+              })
+            }
           })
 
           return Math.atan2(yDist, xDist)
         })
       },
-      handleKeyDown (event) {
-        console.log(event)
+      handleKey (event) {
+        this.nextShape()
+      },
+      nextShape () {
+        this.currentShape++
+        this.currentShape %= this.shapeProtos.length
+        this.shapes = this.shapeProtos[this.currentShape]
+
+        this.updateShapes()
+        this.updateForceField()
+      },
+      isPointInPolygon (point, polygon) {
+        // ray-casting algorithm based on
+        // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+
+        let x = point.x
+        let y = point.y
+
+        let inside = false
+        for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+          let xi = polygon[i].x
+          let yi = polygon[i].y
+          let xj = polygon[j].x
+          let yj = polygon[j].y
+
+          let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)
+          if (intersect) inside = !inside
+        }
+
+        return inside
       }
       // ,
       // makeShape () {
