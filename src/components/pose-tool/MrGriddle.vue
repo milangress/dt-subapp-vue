@@ -12,7 +12,7 @@
            :x2="line.x2 * gridCell.width", :y2="line.y2 * gridCell.height")
       ellipse#resize-handle(
         :cx="gridCell.width", :cy="gridCell.height",
-        rx="4", ry="4",
+        rx="10", ry="10",
         @mousedown="initResizeCell", :class="{resizing: resizingCell}")
 </template>
 
@@ -35,7 +35,8 @@
         lines: []
       }
     },
-    mouted () {
+    mounted () {
+      this.bruteForceLogin()
     },
     computed: {
       svgSize () {
@@ -59,9 +60,40 @@
         this.lastFrameTime = this.$store.state.time
         skeleton.rotate()
         this.updateSkeleton()
+        this.storeSkeleton()
       }
     },
     methods: {
+      bruteForceLogin () {
+        let user = window.localStorage.getItem('user')
+        if (user) {
+          user = JSON.parse(user)
+          this.$store.dispatch('auth/authenticate', user)
+            .then(() => {
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        }
+      },
+      storeSkeleton () {
+        let annotation = {
+          body: {
+            type: 'MrGriddleSkeleton',
+            purpose: 'linking',
+            value: JSON.stringify({
+              skeleton: skeleton.getEdges(),
+              grid: this.grid,
+              gridCell: this.gridCell,
+              svgSize: this.svgSize
+            })
+          },
+          author: this.$store.state.auth.payload.userId
+        }
+        this.$store.dispatch('annotations/create', annotation).then((resp) => {
+          console.log(resp)
+        })
+      },
       initResizeCell () {
         this.resizingCell = true
       },
