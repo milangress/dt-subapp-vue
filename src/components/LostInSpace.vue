@@ -67,7 +67,7 @@
           let svgEl = proto.children[i]
           let pathLen = svgEl.getTotalLength()
           let amount = 40
-          let step = pathLen / (amount-1)
+          let step = pathLen / (amount - 1)
           let points = Array(amount).fill(0).map((v, n) => {
             let len = step * n
             let point = svgEl.getPointAtLength(len)
