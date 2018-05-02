@@ -1,25 +1,35 @@
 <template lang="pug">
   svg(width="100vw", height="100vh", @mouseup="addParticle")
-      g#force-field(v-if="showForceField")
-        template(v-for="(cell, i) in forceField")
-          rect(:x="(i % forceFieldDimensions.columns) * forceFieldDimensions.width",
-            :y="Math.floor(i / forceFieldDimensions.columns) * forceFieldDimensions.height",
-            :width="forceFieldDimensions.width",
-            :height="forceFieldDimensions.height",
-            :fill="radiansToColor(cell)")
-          polygon(points="10,0 -10,-10 0,0 -10,10",
-            fill="rgba(255, 255, 255, 0.7)",
-            :transform="`translate(${forceFieldDimensions.width / 2 + (i % forceFieldDimensions.columns) * forceFieldDimensions.width},${forceFieldDimensions.height / 2 + Math.floor(i / forceFieldDimensions.columns) * forceFieldDimensions.height}) rotate(${(cell / (Math.PI * 2)) * 360}) scale(${forceFieldDimensions.width / 70.0})`")
-      g#shapes(v-if="showShapes")
-        template(v-for="shape in shapes")
-          polygon(
-            :points="shape.points.map(p=>{return `${p.x},${p.y} `})"
-            :fill="shape.fill || 'black'", stroke="black", stroke-width="2")
-          <!--ellipse(:cx="shape.center.x", :cy="shape.center.y", :rx="5", :ry="5",-->
-            <!--fill="yellow", stroke="blue", stroke-width="3")-->
-      g#particles
-        template(v-for="particle in particles")
-          ellipse(:cx="particle.position.x", :cy="particle.position.y", rx="5", ry="5")
+    defs
+      g#shape-protos
+        g
+          line(x1="-50", y1="-50", x2="50", y2="50")
+        g
+          ellipse(cx="0", cy="0", rx="50", ry="50")
+        g
+          polygon(points="3,50 -43,-24 43,-25")
+        g
+          rect(x="-50", y="-50", width="100", height="100")
+    g#force-field(v-if="showForceField")
+      template(v-for="(cell, i) in forceField")
+        rect(:x="(i % forceFieldDimensions.columns) * forceFieldDimensions.width",
+          :y="Math.floor(i / forceFieldDimensions.columns) * forceFieldDimensions.height",
+          :width="forceFieldDimensions.width",
+          :height="forceFieldDimensions.height",
+          :fill="radiansToColor(cell)")
+        polygon(points="10,0 -10,-10 0,0 -10,10",
+          fill="rgba(255, 255, 255, 0.7)",
+          :transform="`translate(${forceFieldDimensions.width / 2 + (i % forceFieldDimensions.columns) * forceFieldDimensions.width},${forceFieldDimensions.height / 2 + Math.floor(i / forceFieldDimensions.columns) * forceFieldDimensions.height}) rotate(${(cell / (Math.PI * 2)) * 360}) scale(${forceFieldDimensions.width / 70.0})`")
+    g#shapes(v-if="showShapes")
+      template(v-for="shape in shapes")
+        polygon(
+          :points="shape.points.map(p=>{return `${p.x},${p.y} `})"
+          :fill="'none' || shape.fill || 'black'", stroke="black", stroke-width="2")
+        <!--ellipse(:cx="shape.center.x", :cy="shape.center.y", :rx="5", :ry="5",-->
+          <!--fill="yellow", stroke="blue", stroke-width="3")-->
+    g#particles
+      template(v-for="particle in particles")
+        ellipse(:cx="particle.position.x", :cy="particle.position.y", rx="5", ry="5")
 </template>
 
 <script>
@@ -27,7 +37,7 @@
     name: 'LostInSpace',
     data () {
       return {
-        numberOfParticles: 200,
+        numberOfParticles: 1,
         showForceField: true,
         showShapes: true,
         frameLength: 1000 / 30.0,
@@ -46,31 +56,29 @@
     mounted () {
       const that = this
 
-      let points = []
-      let padding = 150
-      let numPoints = 25
+      const shapeProtos = this.$el.querySelectorAll('#shape-protos > g')
+      const winHalfWidth = window.innerWidth / 2
+      const winHalfHeight = window.innerHeight / 2
+      const smallestLengthFull = Math.min(window.innerWidth, window.innerHeight)
+      const smallestLength = smallestLengthFull - smallestLengthFull / 5 // -5%
 
-      Array(numPoints).fill(0).map((v, i) => {
-        let ii = i / (numPoints - 1.0)
-        points.push({
-          x: padding + ii * (window.innerWidth - 2 * padding),
-          y: window.innerHeight - padding - ii * (window.innerHeight - 2 * padding)
+      shapeProtos.forEach(proto => {
+        let shapes = Array(proto.children.length).fill(0).map((v1, i) => {
+          let svgEl = proto.children[i]
+          let pathLen = svgEl.getTotalLength()
+          let amount = 40
+          let step = pathLen / (amount-1)
+          let points = Array(amount).fill(0).map((v, n) => {
+            let len = step * n
+            let point = svgEl.getPointAtLength(len)
+            return {
+              x: winHalfWidth + (point.x / 100.0 * smallestLength),
+              y: winHalfHeight + (point.y / 100.0 * smallestLength)
+            }
+          })
+          return {points: points}
         })
-      })
-      this.shapes.push({
-        points: points
-      })
-
-      points = []
-      Array(numPoints).fill(0).map((v, i) => {
-        let ii = i / (numPoints - 1.0)
-        points.push({
-          x: padding + ii * (window.innerWidth - 2 * padding),
-          y: padding + ii * (window.innerHeight - 2 * padding)
-        })
-      })
-      this.shapes.push({
-        points: points
+        that.shapes = that.shapes.concat(shapes)
       })
 
       let forceFieldCellSize = 60
@@ -209,21 +217,21 @@
         }
       },
       updateShapes () {
-        const winX = window.innerWidth
-        const winY = window.innerHeight
-        this.shapes = this.shapes.map(shape => {
-          shape.points = shape.points.map(point => {
-            let dx = winX - point.x
-            let dy = winY - point.y
-            let len = Math.sqrt(dx * dx + dy * dy)
-            let rad = Math.atan2(dy, dx)
-            rad += Math.PI / 600
-            point.x = Math.cos(rad) * len
-            point.y = Math.sin(rad) * len
-            return point
-          })
-          return shape
-        })
+        // const winX = window.innerWidth
+        // const winY = window.innerHeight
+        // this.shapes = this.shapes.map(shape => {
+        //   shape.points = shape.points.map(point => {
+        //     let dx = winX - point.x
+        //     let dy = winY - point.y
+        //     let len = Math.sqrt(dx * dx + dy * dy)
+        //     let rad = Math.atan2(dy, dx)
+        //     rad += Math.PI / 600
+        //     point.x = Math.cos(rad) * len
+        //     point.y = Math.sin(rad) * len
+        //     return point
+        //   })
+        //   return shape
+        // })
       },
       updateForceField () {
         const that = this
@@ -254,24 +262,25 @@
       },
       handleKeyDown (event) {
         console.log(event)
-      },
-      makeShape () {
-        let size = 50 + Math.random() * window.innerWidth / 2
-        let x = Math.random() * window.innerWidth
-        let y = Math.random() * window.innerHeight
-        let shape = {
-          center: {x: x, y: y},
-          points: []
-        }
-        Array(3 + Math.ceil(Math.random() * 5)).fill(0).map(() => {
-          let rad = Math.random() * Math.PI * 2
-          shape.points.push({
-            x: x + Math.cos(rad) * Math.random() * size,
-            y: y + Math.sin(rad) * Math.random() * size
-          })
-        })
-        this.shapes.push(shape)
       }
+      // ,
+      // makeShape () {
+      //   let size = 50 + Math.random() * window.innerWidth / 2
+      //   let x = Math.random() * window.innerWidth
+      //   let y = Math.random() * window.innerHeight
+      //   let shape = {
+      //     center: {x: x, y: y},
+      //     points: []
+      //   }
+      //   Array(3 + Math.ceil(Math.random() * 5)).fill(0).map(() => {
+      //     let rad = Math.random() * Math.PI * 2
+      //     shape.points.push({
+      //       x: x + Math.cos(rad) * Math.random() * size,
+      //       y: y + Math.sin(rad) * Math.random() * size
+      //     })
+      //   })
+      //   this.shapes.push(shape)
+      // }
     }
   }
 </script>
