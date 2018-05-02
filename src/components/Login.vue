@@ -22,12 +22,23 @@
         timelines: []
       }
     },
+    mounted () {
+      let user = window.localStorage.getItem('user')
+      if (user) {
+        user = JSON.parse(user)
+        this.payload.username = user.username
+        this.payload.email = user.email
+        this.payload.password = user.password
+        this.loginUser()
+      }
+    },
     methods: {
       loginUser () {
         const _this = this
         return this.$store.dispatch('auth/authenticate', _this.payload)
           .then(() => {
             _this.loggedIn = true
+            window.localStorage.setItem('user', JSON.stringify(_this.payload))
           })
           .catch(err => {
             _this.loggedIn = false
