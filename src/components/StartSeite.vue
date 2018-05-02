@@ -1,33 +1,45 @@
 <template lang="pug">
   div#tools
-    router-link(:to="{path: tool.path}").tool(v-for="tool in tools")
+    a(:href="tool.path").tool(v-for="tool in tools", :key="tool.path")
       h1 {{tool.name}}
 </template>
 
 <script>
+  import getParams from '../lib/params'
   export default {
     name: 'StartSeite',
     data () {
       return {
-        tools: [
+        tools: []
+      }
+    },
+    mounted () {
+      const _this = this
+      getParams().then(params => {
+        console.log(params)
+        const urls = params.urls[0]
+
+        _this.tools = [
           {
             name: 'Mr. Griddle',
-            path: '/mr-griddle'
+            path: urls.subappVue + '/#/mr-griddle'
           },
           {
             name: 'Rezepte',
-            path: '/lost-in-space'
+            path: urls.subappQuasar + '/allrecipes'
           },
           {
             name: 'Lost in Space',
-            path: '/lost-in-space'
+            path: urls.subappVue + '/#/lost-in-space'
           },
           {
             name: 'Video Tool',
-            path: '/lost-in-space'
+            path: urls.subappQuasar + '/videosequencer'
           }
         ]
-      }
+
+        console.log(_this.tools)
+      })
     }
   }
 </script>

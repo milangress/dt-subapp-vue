@@ -7,7 +7,7 @@ Vue.use(Vuex)
 
 const idField = 'uuid'
 const opts = { idField }
-const client = createClient('https://motionbank-api.herokuapp.com')
+const client = createClient('http://10.10.10.102:3030')
 const { service, auth } = feathersVuex(client, opts)
 
 const store = new Vuex.Store({
