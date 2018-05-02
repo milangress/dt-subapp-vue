@@ -1,6 +1,6 @@
 <template lang="pug">
     svg(width="100vw", height="100vh", @mouseup="addParticle")
-      g
+      g#force-field(v-if="showForceField")
         template(v-for="(cell, i) in forceField")
           rect(:x="(i % forceFieldDimensions.columns) * forceFieldDimensions.width",
             :y="Math.floor(i / forceFieldDimensions.columns) * forceFieldDimensions.height",
@@ -8,15 +8,14 @@
             :fill="radiansToColor(cell)")
           polygon(points="10,0 -10,-10 0,0 -10,10",
             :transform="`translate(${forceFieldDimensions.width / 2 + (i % forceFieldDimensions.columns) * forceFieldDimensions.width},${forceFieldDimensions.height / 2 + Math.floor(i / forceFieldDimensions.columns) * forceFieldDimensions.height}) rotate(${(cell / (Math.PI * 2)) * 360}) scale(${forceFieldDimensions.width / 70.0})`")
-
-      g
+      g#shapes(v-if="showShapes")
         template(v-for="shape in shapes")
-          ellipse(:cx="shape.center.x", :cy="shape.center.y", :rx="5", :ry="5",
-            fill="yellow", stroke="blue", stroke-width="3")
-          <!--polygon(-->
-            <!--:points="shape.points.map(p=>{return `${p.x},${p.y} `})"-->
-            <!--:fill="shape.fill || 'black'", stroke="black", stroke-width="2")-->
-      g
+          polygon(
+            :points="shape.points.map(p=>{return `${p.x},${p.y} `})"
+            :fill="shape.fill || 'black'", stroke="black", stroke-width="2")
+          <!--ellipse(:cx="shape.center.x", :cy="shape.center.y", :rx="5", :ry="5",-->
+            <!--fill="yellow", stroke="blue", stroke-width="3")-->
+      g#particles
         template(v-for="particle in particles")
           ellipse(:cx="particle.position.x", :cy="particle.position.y", rx="5", ry="5")
 </template>
@@ -26,6 +25,8 @@
     name: 'LostInSpace',
     data () {
       return {
+        showForceField: true,
+        showShapes: true,
         frameLength: 1000 / 30.0,
         lastFrameTime: -1,
         shapes: [],
@@ -42,13 +43,41 @@
     mounted () {
       const that = this
 
-      Array(10).fill(0).map(() => {
-        this.makeShape()
+      // random shapes
+      // Array(10).fill(0).map(() => {
+      //   this.makeShape()
+      // })
+
+      let points = []
+      let padding = 150
+
+      Array(100).fill(0).map((v, i) => {
+        let ii = i / 100.0
+        points.push({
+          x: padding + ii * (window.innerWidth - 2 * padding),
+          y: window.innerHeight - padding - ii * (window.innerHeight - 2 * padding)
+        })
+      })
+      this.shapes.push({
+        points: points
       })
 
-      this.forceFieldDimensions.columns = Math.ceil(window.innerWidth / 25)
+      points = []
+      Array(100).fill(0).map((v, i) => {
+        let ii = i / 100.0
+        points.push({
+          x: padding + ii * (window.innerWidth - 2 * padding),
+          y: padding + ii * (window.innerHeight - 2 * padding)
+        })
+      })
+      this.shapes.push({
+        points: points
+      })
+
+      let forceFieldCellSize = 10
+      this.forceFieldDimensions.columns = Math.ceil(window.innerWidth / forceFieldCellSize)
       this.forceFieldDimensions.width = window.innerWidth / this.forceFieldDimensions.columns
-      this.forceFieldDimensions.rows = Math.ceil(window.innerHeight / 25)
+      this.forceFieldDimensions.rows = Math.ceil(window.innerHeight / forceFieldCellSize)
       this.forceFieldDimensions.height = window.innerHeight / this.forceFieldDimensions.rows
       let forceFieldLength = this.forceFieldDimensions.columns * this.forceFieldDimensions.rows
 
@@ -58,13 +87,13 @@
       // })
 
       // circular FF
-      this.forceField = Array(forceFieldLength).fill(0).map((v, i) => {
-        let x = i % this.forceFieldDimensions.columns
-        let y = Math.round(i / this.forceFieldDimensions.columns)
-        let xDist = this.forceFieldDimensions.columns / 2 - x
-        let yDist = this.forceFieldDimensions.rows / 2 - y
-        return Math.atan2(yDist, xDist) + Math.PI / 2
-      })
+      // this.forceField = Array(forceFieldLength).fill(0).map((v, i) => {
+      //   let x = i % this.forceFieldDimensions.columns
+      //   let y = Math.round(i / this.forceFieldDimensions.columns)
+      //   let xDist = this.forceFieldDimensions.columns / 2 - x
+      //   let yDist = this.forceFieldDimensions.rows / 2 - y
+      //   return Math.atan2(yDist, xDist) + Math.PI / 2
+      // })
 
       // FF based on shapes
       this.forceField = Array(forceFieldLength).fill(0).map((v, i) => {
@@ -74,20 +103,20 @@
         let yDist = 0
 
         that.shapes.map(shape => {
-          let sx = Math.round(shape.center.x / that.forceFieldDimensions.width)
-          let sy = Math.round(shape.center.y / that.forceFieldDimensions.height)
-          let xd = x - sx
-          let yd = y - sy
-          let dist = Math.sqrt(xDist * xDist + yDist * yDist)
-          let factor = 1
-          if (dist > 0) {
-            factor = Math.min(1, 5 / dist)
-          }
-          xDist += xd * factor
-          yDist += yd * factor
+          shape.points.map(point => {
+            let sx = Math.round(point.x / that.forceFieldDimensions.width)
+            let sy = Math.round(point.y / that.forceFieldDimensions.height)
+            let xd = sx - x
+            let yd = sy - y
+            let dist = Math.sqrt(xd * xd + yd * yd)
+            let factor = 1
+            if (dist > 0) factor = 1 / (dist * dist * dist)
+            xDist += xd * factor
+            yDist += yd * factor
+          })
         })
 
-        return Math.atan2(yDist, xDist) + Math.PI / 2
+        return Math.atan2(yDist, xDist)
       })
 
       this.particles = Array(100).fill(0).map(() => {
@@ -165,8 +194,11 @@
             x: Math.cos(rad),
             y: Math.sin(rad)
           },
-          velocity: 0.1 + Math.random() * 2
+          velocity: 1 + Math.random() * 1
         }
+      },
+      handleKeyDown (event) {
+        console.log(event)
       },
       makeShape () {
         let size = 50 + Math.random() * window.innerWidth / 2
