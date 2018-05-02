@@ -333,7 +333,9 @@
         })
       },
       handleKey (event) {
-        this.nextShape()
+        if (event.key === ' ') {
+          this.nextShape()
+        }
       },
       nextShape () {
         this.currentShape++
