@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 import SkeletonTest from '@/components/helpers/SkeletonTester'
 
-import DanceOMat from '@/components/DanceOMat'
+import StartSeite from '@/components/StartSeite'
 import poseTool from '@/components/pose-tool'
 import RhythmAndShoes from '@/components/RhythmAndShoes'
 import PathDrawer from '@/components/PathDrawer'
@@ -36,8 +36,8 @@ export default new Router({
     },
     {
       path: '/',
-      name: 'DanceOMat',
-      component: DanceOMat
+      name: 'StartSeite',
+      component: StartSeite
     },
     {
       path: '/login',
