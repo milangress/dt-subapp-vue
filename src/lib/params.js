@@ -3,7 +3,7 @@ let params
 
 const getParams = function () {
   if (!params) {
-    return request.get(process.env.PARAM_HOST || 'http://10.10.10.162:4444')
+    return request.get(process.env.PARAM_HOST || 'http://10.10.10.102:4444')
       .then(function (response) {
         console.log(response)
         params = response.body
