@@ -95,6 +95,8 @@
     mounted () {
       const that = this
 
+      this.bruteForceLogin()
+
       window.addEventListener('keyup', this.handleKey)
 
       const shapeProtos = this.$el.querySelectorAll('#shape-protos > g')
@@ -179,6 +181,18 @@
       }
     },
     methods: {
+      bruteForceLogin () {
+        let user = window.localStorage.getItem('user')
+        if (user) {
+          user = JSON.parse(user)
+          this.$store.dispatch('auth/authenticate', user)
+            .then(() => {
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        }
+      },
       // randomForceField () {
       //   // random FF
       //   this.forceField = Array(forceFieldLength).fill(0).map(() => {
@@ -346,6 +360,31 @@
 
         this.updateShapes()
         this.updateForceField()
+
+        this.storeState()
+      },
+      storeState () {
+        if (this.$store.state.auth.payload && this.$store.state.auth.payload.userId) {
+          let annotation = {
+            body: {
+              type: 'LostInSpaceShape',
+              purpose: 'linking',
+              value: JSON.stringify({
+                forceFieldCellSize: this.forceFieldCellSize,
+                numberOfParticles: this.numberOfParticles,
+                currentShapeId: this.currentShapeId,
+                forceFieldDimensions: this.forceFieldDimensions,
+                shapePolygonizerDetail: this.shapePolygonizerDetail,
+                shapeFilling: this.shapeFilling,
+                svgSize: this.svgSize
+              })
+            },
+            author: this.$store.state.auth.payload.userId
+          }
+          this.$store.dispatch('annotations/create', annotation).then((resp) => {
+            console.log(resp)
+          })
+        }
       },
       isPointInPolygon (point, polygon) {
         // ray-casting algorithm based on

@@ -60,7 +60,7 @@
         this.lastFrameTime = this.$store.state.time
         skeleton.rotate()
         this.updateSkeleton()
-        this.storeSkeleton()
+        // this.storeState()
       }
     },
     methods: {
@@ -76,23 +76,25 @@
             })
         }
       },
-      storeSkeleton () {
-        let annotation = {
-          body: {
-            type: 'MrGriddleSkeleton',
-            purpose: 'linking',
-            value: JSON.stringify({
-              skeleton: skeleton.getEdges(),
-              grid: this.grid,
-              gridCell: this.gridCell,
-              svgSize: this.svgSize
-            })
-          },
-          author: this.$store.state.auth.payload.userId
+      storeState () {
+        if (this.$store.state.auth.payload && this.$store.state.auth.payload.userId) {
+          let annotation = {
+            body: {
+              type: 'MrGriddleSkeleton',
+              purpose: 'linking',
+              value: JSON.stringify({
+                skeleton: skeleton.getEdges(),
+                grid: this.grid,
+                gridCell: this.gridCell,
+                svgSize: this.svgSize
+              })
+            },
+            author: this.$store.state.auth.payload.userId
+          }
+          this.$store.dispatch('annotations/create', annotation).then((resp) => {
+            console.log(resp)
+          })
         }
-        this.$store.dispatch('annotations/create', annotation).then((resp) => {
-          console.log(resp)
-        })
       },
       initResizeCell () {
         this.resizingCell = true
