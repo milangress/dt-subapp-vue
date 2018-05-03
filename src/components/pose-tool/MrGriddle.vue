@@ -12,20 +12,20 @@
            :x2="line.x2 * gridCell.width", :y2="line.y2 * gridCell.height")
     g#interface
       g#liking
-        rect(x="20", :y="svgSize.height-20-20",
-          width="20", height="20", @mousedown="handleLike")
+        ellipse(cx="30", :cy="svgSize.height-30",
+          rx="14", ry="14", @mousedown="handleLike", fill="red")
         rect(v-for="(state, k) in storedStates",
           :x="60 + k * 40", :y="svgSize.height - 40", width="20", height="20",
           :fill="currentState === k ? 'black' : 'white'", stroke="black", stroke-width="2",
           @mouseup="handleClickLike(k)")
       g#resize-handle(:transform="`translate(${gridCell.width},${gridCell.height})`")
-        ellipse(
-          :cx="0", :cy="0", rx="10", ry="10",
+        rect(
+          x="-12", y="-12", width="24", height="24",
           @mousedown="initResizeCell", :class="{resizing: resizingCell}")
-        polygon(points="12,-12 30,0 12,12", @mousedown="handleGridChange(1,0)")
-        polygon(points="-12,-12 -30,0 -12,12", @mousedown="handleGridChange(-1,0)")
-        polygon(points="-12,-12 0,-30 12,-12", @mousedown="handleGridChange(0,1)")
-        polygon(points="-12,12 0,30 12,12", @mousedown="handleGridChange(0,-1)")
+        polygon(points="12,-12 30,0 12,12", @mousedown="handleGridChange(-2,0)")
+        polygon(points="-12,-12 -30,0 -12,12", @mousedown="handleGridChange(2,0)")
+        polygon(points="-12,-12 0,-30 12,-12", @mousedown="handleGridChange(0,2)")
+        polygon(points="-12,12 0,30 12,12", @mousedown="handleGridChange(0,-2)")
       g#speed-handle
         rect(:x="svgSize.width-20-200", :y="20",
           width="200", height="20", fill="white", stroke="grey", stroke-width="2", @mousedown="initSetFrameLength")
@@ -132,6 +132,11 @@
           svgSize: this.svgSize
         }
       },
+      handleGridChange (columns, rows) {
+        this.grid.columns += columns
+        this.grid.rows += rows
+        this.updateSkeleton()
+      },
       initSetFrameLength (event) {
         this.settingFrameLength = true
         this.frameLength = Math.min(180, Math.max(0, event.clientX - (this.svgSize.width - 200 - 20)))
@@ -218,9 +223,10 @@
   #resize-handle {
     fill: white;
     stroke: gray;
-    stroke-width: 1;
+    stroke-width: 2
   }
-  #resize-handle:hover, #resize-handle.resizing {
+  #resize-handle *:hover,
+  #resize-handle.resizing {
     fill: gray;
   }
 </style>
