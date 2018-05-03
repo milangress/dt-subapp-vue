@@ -18,19 +18,22 @@
           :x="60 + k * 40", :y="svgSize.height - 40", width="20", height="20",
           :fill="currentState === k ? 'black' : 'white'", stroke="black", stroke-width="2",
           @mouseup="handleClickLike(k)")
-      ellipse#resize-handle(
-        :cx="gridCell.width", :cy="gridCell.height",
-        rx="10", ry="10",
-        @mousedown="initResizeCell", :class="{resizing: resizingCell}")
+      g#resize-handle(:transform="`translate(${gridCell.width},${gridCell.height})`")
+        ellipse(
+          :cx="0", :cy="0", rx="10", ry="10",
+          @mousedown="initResizeCell", :class="{resizing: resizingCell}")
+        polygon(points="12,-12 30,0 12,12", @mousedown="handleGridChange(1,0)")
+        polygon(points="-12,-12 -30,0 -12,12", @mousedown="handleGridChange(-1,0)")
+        polygon(points="-12,-12 0,-30 12,-12", @mousedown="handleGridChange(0,1)")
+        polygon(points="-12,12 0,30 12,12", @mousedown="handleGridChange(0,-1)")
       g#speed-handle
         rect(:x="svgSize.width-20-200", :y="20",
-          width="200", height="20", fill="white", stroke="grey", stroke-width="2")
+          width="200", height="20", fill="white", stroke="grey", stroke-width="2", @mousedown="initSetFrameLength")
         rect(:x="svgSize.width-20-200 + frameLength", :y="20",
-          width="20", height="20", fill="grey", stroke="none", @mousedown="initSetFrameLength")
+          width="20", height="20", fill="grey", stroke="none")
 </template>
 
 <script>
-  import Vue from 'vue'
   import Skeleton from '@/components/helpers/skeleton'
 
   const skeleton = new Skeleton()
@@ -128,8 +131,9 @@
           svgSize: this.svgSize
         }
       },
-      initSetFrameLength () {
+      initSetFrameLength (event) {
         this.settingFrameLength = true
+        this.frameLength = Math.min(180, Math.max(0, event.clientX - (this.svgSize.width - 200 - 20)))
       },
       initResizeCell () {
         this.resizingCell = true
@@ -144,7 +148,11 @@
           this.frameLength = Math.min(180, Math.max(0, event.clientX - (this.svgSize.width - 200 - 20)))
         }
       },
-      stopDragging () {
+      stopDragging (event) {
+        if (this.resizingCell) {
+          this.grid.columns = Math.round(this.svgSize.width / event.clientX)
+          this.grid.rows = Math.round(this.svgSize.height / event.clientY)
+        }
         if (this.resizingCell || this.settingFrameLength) {
           this.updateFrame()
         }
