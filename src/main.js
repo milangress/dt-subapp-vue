@@ -7,7 +7,13 @@ import router from './router'
 import WobbleClock from './lib/clock'
 import store from './store'
 
+import localID from './plugins/local-id'
+import loginOrSignup from './plugins/login-or-signup'
+
 Vue.config.productionTip = false
+
+localID({ Vue })
+loginOrSignup({ Vue })
 
 const clock = new WobbleClock(
   // target fps

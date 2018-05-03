@@ -51,8 +51,9 @@
         currentState: -1
       }
     },
-    mounted () {
-      this.bruteForceLogin()
+    async mounted () {
+      // this.bruteForceLogin()
+      await this.$loginOrSignup(this.$store)
     },
     computed: {
       svgSize () {

@@ -13,8 +13,9 @@
         tools: []
       }
     },
-    mounted () {
+    async mounted () {
       const _this = this
+      await this.$loginOrSignup(this.$store)
       getParams().then(params => {
         console.log(params)
         const urls = params.urls[0]

@@ -92,10 +92,11 @@
     beforeDestroy () {
       window.removeEventListener('keyup', this.handleKey)
     },
-    mounted () {
+    async mounted () {
       const that = this
 
-      this.bruteForceLogin()
+      // this.bruteForceLogin()
+      await this.$loginOrSignup(this.$store)
 
       window.addEventListener('keyup', this.handleKey)
 
