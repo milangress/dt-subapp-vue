@@ -1,22 +1,36 @@
 <template lang="pug">
   svg(width="100vw", height="100vh",
-    @mousemove="doResizeCell", @mouseup="stopResizeCell")
+    @mousemove="doDragging", @mouseup="stopDragging")
     defs
       pattern(id="cell-pattern", :width="gridCell.width", :height="gridCell.height", patternUnits="userSpaceOnUse")
         path(:d="`M ${gridCell.width} 0 L 0 0 0 ${gridCell.height}`",
              fill="none", stroke="gray", stroke-width="3")
-    g
+    g#mr-griddle(:class="{'random': currentState === -1}")
       rect(width="100%", height="100%", fill="url(#cell-pattern)")
       line(v-for="(line, i) in lines", :key="`line-${i}`",
            :x1="line.x1 * gridCell.width", :y1="line.y1 * gridCell.height",
            :x2="line.x2 * gridCell.width", :y2="line.y2 * gridCell.height")
+    g#interface
+      g#liking
+        rect(x="20", :y="svgSize.height-20-20",
+          width="20", height="20", @mousedown="handleLike")
+        rect(v-for="(state, k) in storedStates",
+          :x="60 + k * 40", :y="svgSize.height - 40", width="20", height="20",
+          :fill="currentState === k ? 'black' : 'white'", stroke="black", stroke-width="2",
+          @mouseup="handleClickLike(k)")
       ellipse#resize-handle(
         :cx="gridCell.width", :cy="gridCell.height",
         rx="10", ry="10",
         @mousedown="initResizeCell", :class="{resizing: resizingCell}")
+      g#speed-handle
+        rect(:x="svgSize.width-20-200", :y="20",
+          width="200", height="20", fill="white", stroke="grey", stroke-width="2")
+        rect(:x="svgSize.width-20-200 + frameLength", :y="20",
+          width="20", height="20", fill="grey", stroke="none", @mousedown="initSetFrameLength")
 </template>
 
 <script>
+  import Vue from 'vue'
   import Skeleton from '@/components/helpers/skeleton'
 
   const skeleton = new Skeleton()
@@ -30,9 +44,12 @@
         },
         currentTime: 0,
         resizingCell: false,
+        settingFrameLength: false,
         lastFrameTime: -1,
-        frameLength: 1000 / 1.0,
-        lines: []
+        frameLength: 100,
+        lines: [],
+        storedStates: [],
+        currentState: -1
       }
     },
     mounted () {
@@ -51,19 +68,26 @@
           height: this.svgSize.height / this.grid.rows
         }
       },
+      skeletonScale () {
+        return Math.min(1, this.svgSize.width / 900)
+      },
       nextFrame () {
-        return (this.$store.state.time - this.lastFrameTime) >= this.frameLength
+        let fps = (this.frameLength / 180) * 2
+        return (this.$store.state.time - this.lastFrameTime) >= 1000 / fps
       }
     },
     watch: {
       nextFrame () {
         this.lastFrameTime = this.$store.state.time
-        skeleton.rotate()
-        this.updateSkeleton()
-        // this.storeState()
+        this.updateFrame()
       }
     },
     methods: {
+      handleClickLike (which) {
+        this.currentState = which === this.currentState ? -1 : which
+        this.storeState()
+        this.updateSkeleton()
+      },
       bruteForceLogin () {
         let user = window.localStorage.getItem('user')
         if (user) {
@@ -76,18 +100,18 @@
             })
         }
       },
+      updateFrame () {
+        skeleton.rotate()
+        this.storeState()
+        this.updateSkeleton()
+      },
       storeState () {
         if (this.$store.state.auth.payload && this.$store.state.auth.payload.userId) {
           let annotation = {
             body: {
               type: 'MrGriddleSkeleton',
               purpose: 'linking',
-              value: JSON.stringify({
-                skeleton: skeleton.getEdges(),
-                grid: this.grid,
-                gridCell: this.gridCell,
-                svgSize: this.svgSize
-              })
+              value: JSON.stringify(this.getState())
             },
             author: this.$store.state.auth.payload.userId
           }
@@ -96,34 +120,68 @@
           })
         }
       },
+      getState () {
+        return {
+          skeleton: skeleton.getEdges(),
+          grid: this.grid,
+          gridCell: this.gridCell,
+          svgSize: this.svgSize
+        }
+      },
+      initSetFrameLength () {
+        this.settingFrameLength = true
+      },
       initResizeCell () {
         this.resizingCell = true
       },
-      doResizeCell (event) {
+      doDragging (event) {
         if (this.resizingCell) {
           this.grid.columns = Math.round(this.svgSize.width / event.clientX)
           this.grid.rows = Math.round(this.svgSize.height / event.clientY)
           this.updateSkeleton()
         }
+        if (this.settingFrameLength) {
+          this.frameLength = Math.min(180, Math.max(0, event.clientX - (this.svgSize.width - 200 - 20)))
+        }
       },
-      stopResizeCell () {
+      stopDragging () {
+        if (this.resizingCell || this.settingFrameLength) {
+          this.updateFrame()
+        }
         this.resizingCell = false
+        this.settingFrameLength = false
+      },
+      handleLike () {
+        this.storedStates.push(this.getState())
+        this.currentState = this.storedStates.length - 1
+        this.updateFrame()
       },
       handleKeyUp (event) {
         console.log(event)
       },
       updateSkeleton () {
-        let skeletonLines = skeleton.getEdges()
+        let skeletonLines = []
+        if (this.currentState === -1) {
+          skeletonLines = skeleton.getEdges()
+        } else {
+          let state = this.storedStates[this.currentState]
+          skeletonLines = state.skeleton
+          // Vue.set(this, 'grid', state.grid)
+          this.grid.columns = state.grid.columns
+          this.grid.rows = state.grid.rows
+          this.grid.width = state.grid.width
+          this.grid.height = state.grid.height
+        }
         let x = Math.round(this.grid.columns / 2)
         let y = Math.round(this.grid.rows / 2)
-        let w = this.gridCell.width
-        let h = this.gridCell.height
+        let w = this.svgSize.width / this.grid.columns
+        let h = this.svgSize.height / this.grid.rows
         this.lines = skeletonLines.map(line => {
           return {
-            x1: x + Math.round(line.x1 / w),
-            y1: y + Math.round(line.y1 / h),
-            x2: x + Math.round(line.x2 / w),
-            y2: y + Math.round(line.y2 / h)
+            x1: x + Math.round(line.x1 * this.skeletonScale / w),
+            y1: y + Math.round(line.y1 * this.skeletonScale / h),
+            x2: x + Math.round(line.x2 * this.skeletonScale / w),
+            y2: y + Math.round(line.y2 * this.skeletonScale / h)
           }
         })
       }
@@ -131,7 +189,7 @@
   }
 </script>
 
-<style scoped>
+<style scoped lang="stylus">
   svg {
     position: absolute;
     top: 0;
@@ -139,14 +197,15 @@
      bottom: 0;
     left: 0;
   }
-  line {
-    stroke: blue;
-    stroke-width: 20px;
-    stroke-linecap: round;
-  }
-  line:hover {
-    stroke: red;
-  }
+  #mr-griddle
+    line {
+      stroke mediumvioletred
+      stroke-width 20px
+      stroke-linecap round
+    }
+  #mr-griddle.random
+    line
+      stroke: cornflowerblue
   #resize-handle {
     fill: white;
     stroke: gray;
