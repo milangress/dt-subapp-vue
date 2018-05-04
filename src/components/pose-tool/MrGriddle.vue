@@ -110,6 +110,7 @@
         this.updateSkeleton()
       },
       storeState () {
+        /*
         if (this.$store.state.auth.payload && this.$store.state.auth.payload.userId) {
           let annotation = {
             body: {
@@ -123,6 +124,7 @@
             console.log(resp)
           })
         }
+        */
       },
       getState () {
         return {

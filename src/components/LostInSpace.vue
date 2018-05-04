@@ -365,6 +365,7 @@
         this.storeState()
       },
       storeState () {
+        /*
         if (this.$store.state.auth.payload && this.$store.state.auth.payload.userId) {
           let annotation = {
             body: {
@@ -386,6 +387,7 @@
             console.log(resp)
           })
         }
+        */
       },
       isPointInPolygon (point, polygon) {
         // ray-casting algorithm based on
