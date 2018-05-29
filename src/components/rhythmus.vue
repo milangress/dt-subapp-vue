@@ -4,6 +4,8 @@
       template(v-for="(rythmWeight, i) in rythmWeights")
         g(:class="rythm")
         rect(:x="rythm.x[i]" :y="0" :width="rythm.width[i]" :height="bar.height" fill="grey" stroke="black")
+    g
+      rect(:x="0" :y="bar.height/2" :width="timeLoop" height="100px" fill="grey" stroke="black")
 </template>
 
 <script>
@@ -11,7 +13,7 @@
     data () {
       return {
         rythmWeights: [
-          1, 2, 1, 1
+          10, 20, 10, 10
         ],
         bar: {
           width: 100,
@@ -32,6 +34,9 @@
       }
     },
     computed: {
+      time () {
+        return this.$store.state.time
+      },
       rythm: function () {
         let rythmBarWidth = []
         let rythmBarXpos = []
@@ -43,6 +48,9 @@
           x = x + width
         })
         return {width: rythmBarWidth, x: rythmBarXpos}
+      },
+      timeLoop: function () {
+        return this.factorToWidth(this.time % 10000 / 10000)
       }
     }
   }
