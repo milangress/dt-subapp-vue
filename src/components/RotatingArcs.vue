@@ -1,4 +1,5 @@
 <template lang="pug">
+ div
   svg(width="100vw",height="100vh")
     g
       template(v-for="(segment, i) in segments")

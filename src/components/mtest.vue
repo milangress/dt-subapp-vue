@@ -9,7 +9,7 @@
     defs
       clipPath(id="cut-off")
         rect(:x="x-200" :y="y-200" width="400" height="400")
-    polyline(:points="path" :stroke-width="pathLength" clip-path="url(#cut-off)")
+    polyline(:points="path" :stroke-width="pathLength")
 </template>
 
 <script>
