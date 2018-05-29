@@ -1,9 +1,9 @@
 <template lang="pug">
-  svg(width="100vw",height="100vh" @click="() => {makePoint()}")
+  svg(width="100vw",height="100vh")
     g
       template(v-for="(rythmWeight, i) in rythmWeights")
         g(:class="rythm")
-        rect(:x="bar.x" :y="0" :width="rythm.width[i]" :height="bar.height" fill="black")
+        rect(:x="rythm.x[i]" :y="0" :width="rythm.width[i]" :height="bar.height" fill="white")
 </template>
 
 <script>
@@ -26,16 +26,24 @@
           return acc + val
         })
         let rythmBarWidth = []
+        let rythmBarXpos = []
+        let x = 0
         this.rythmWeights.forEach((val, i) => {
-          let windowWith = window.innerWidth
-          rythmBarWidth[i] = (val / sumOfRythm) * windowWith
+          let width = (val / sumOfRythm) * window.innerWidth
+          rythmBarWidth[i] = width
+          rythmBarXpos[i] = x
+          x = x + width
         })
-        return {width: rythmBarWidth}
+        return {width: rythmBarWidth, x: rythmBarXpos}
       }
     }
   }
 </script>
 
 <style scoped>
+  rect {
+    border: #2c3e50;
+    border: 2px;
+  }
 
 </style>
