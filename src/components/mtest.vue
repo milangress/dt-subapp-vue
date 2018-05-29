@@ -9,7 +9,7 @@
     defs
       clipPath(id="cut-off")
         rect(:x="x-200" :y="y-200" width="400" height="400")
-    polyline(:points="path" :stroke-width="pathLength")
+    polygon(:points="combinedPath" :stroke-width="pathLength")
 </template>
 
 <script>
@@ -33,6 +33,14 @@
     computed: {
       time () {
         return this.$store.state.time
+      },
+      combinedPath: function () {
+        return this.startpoint + ', ' + this.points
+      },
+      startpoint: function () {
+        let valX = 500 * Math.sin(this.time * 0.005) + (window.innerWidth / 2)
+        let valY = 500 * Math.sin(this.time * 0.005) + (window.innerHeight / 2)
+        return valX + ' ' + valY
       }
     },
     methods: {
