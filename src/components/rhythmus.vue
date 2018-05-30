@@ -1,11 +1,11 @@
 <template lang="pug">
   svg(width="100vw",height="100vh")
-    g
+    g(@click="() => {addBar()}")
       template(v-for="(rythmWeight, i) in rythmWeights")
         g(:class="rythm")
-        rect(:x="rythm.x[i]" :y="0" :width="rythm.width[i]" :height="bar.height" fill="grey" stroke="black")
-    g
-      rect(:x="0" :y="bar.height/2" :width="timeLoop" height="100px" fill="grey" stroke="black")
+        rect(:x="rythm.x[i]" :y="0" :width="rythm.width[i]" :height="bar.height" fill="darkgrey" stroke="black" v-bind:class="{ pulsing: pulse }")
+    g(@click="() => {removeBar()}")
+      rect(:x="0" :y="bar.height/2-50" :width="factorToWidth(timeLoop)" height="100px" fill="black" stroke="black")
 </template>
 
 <script>
@@ -19,7 +19,8 @@
           width: 100,
           height: window.innerHeight,
           x: 100
-        }
+        },
+        timeLenght: 10
       }
     },
     methods: {
@@ -31,6 +32,12 @@
       },
       factorToWidth (percent) {
         return percent * window.innerWidth
+      },
+      addBar: function () {
+        this.rythmWeights.push(10)
+      },
+      removeBar: function () {
+        this.rythmWeights.pop()
       }
     },
     computed: {
@@ -38,19 +45,36 @@
         return this.$store.state.time
       },
       rythm: function () {
+        let rythmFactor = []
         let rythmBarWidth = []
         let rythmBarXpos = []
         let x = 0
         this.rythmWeights.forEach((val, i) => {
-          let width = this.factorToWidth(this.weightToFactor(val))
+          let barFactor = this.weightToFactor(val)
+          let width = this.factorToWidth(barFactor)
+          rythmFactor[i] = barFactor
           rythmBarWidth[i] = width
           rythmBarXpos[i] = x
           x = x + width
         })
-        return {width: rythmBarWidth, x: rythmBarXpos}
+        return {width: rythmBarWidth, x: rythmBarXpos, factor: rythmFactor}
       },
       timeLoop: function () {
-        return this.factorToWidth(this.time % 10000 / 10000)
+        let timeFactor = this.timeLenght * 1000
+        return this.time % timeFactor / timeFactor
+      },
+      rhytmTime: function () {
+        let timeArray = []
+        let time = 0
+        this.rythm.factor.forEach(function (weight) {
+          time = weight + time
+          timeArray.push(Math.round(time * 100))
+        })
+        return timeArray
+      },
+      pulse: function () {
+        let timeRound = Math.round(this.timeLoop * 100)
+        return this.rhytmTime.includes(timeRound)
       }
     }
   }
@@ -58,8 +82,11 @@
 
 <style scoped>
   rect {
-    border: #2c3e50;
-    border: 2px;
+    stroke: #fff;
+    border: 5px;
+  }
+  .pulsing {
+    fill: white;
   }
 
 </style>
