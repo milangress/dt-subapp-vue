@@ -35,9 +35,6 @@
         })
         return (weight / sumOfRythm)
       },
-      factorToWidth (percent) {
-        return percent * window.innerWidth
-      },
       addBar: function () {
         this.rythmWeights.push(10)
       },
@@ -56,10 +53,10 @@
         let x = 0
         this.rythmWeights.forEach((val, i) => {
           let barFactor = this.weightToFactor(val)
-          let width = this.factorToWidth(barFactor)
+          let width = barFactor * 100
           rythmFactor[i] = barFactor
-          rythmBarWidth[i] = width
-          rythmBarXpos[i] = x
+          rythmBarWidth[i] = width + '%'
+          rythmBarXpos[i] = x + '%'
           x = x + width
         })
         return {width: rythmBarWidth, x: rythmBarXpos, factor: rythmFactor}
