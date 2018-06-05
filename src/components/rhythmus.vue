@@ -10,7 +10,7 @@
       g#pulse
         rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
       g.time-bar
-        rect(:x="0" y="0" :width="timeLooptoPercent(getTimeLoop())" height="100%" fill="url(#verlauf)" stroke="none")
+        rect(:x="timeLooptoPercent(getTimeLoop())" y="0" width="200%" height="100%" fill="url(#verlauf)" stroke="none")
       g#interface
         ellipse(cx="90%" cy="90%" rx="14" ry="14" fill="black" stroke="black" @click="() => {removeBar()}")
         ellipse(cx="95%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addBar()}")
@@ -20,9 +20,11 @@
             ellipse(cx="50%" cy="10%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addRythmWeight(i)}")
       linearGradient#verlauf
         stop(offset="0%" stop-color="white")
+        stop(offset="50%" stop-color="black")
+        stop(offset="50%" stop-color="white")
         stop(offset="100%" stop-color="black")
     div.input-interface
-      label Sekunden: {{ time }}
+      label Sekunden:
         input(v-model="timeLenght" size="5")
 </template>
 
@@ -61,7 +63,7 @@
         this.rythmWeights.pop()
       },
       timeLooptoPercent: function (timeLoop) {
-        return timeLoop * 100 + '%'
+        return (timeLoop * 100) - 100 + '%'
       },
       getTimeLoop () {
         let timeFactor = this.timeLenght * 1000
