@@ -13,7 +13,8 @@
         ellipse(cx="90%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {removeBar()}")
         ellipse(cx="95%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addBar()}")
     div.input-interface
-      input(v-model="timeLenght" placeholder="edit me" width="100px")
+      label Sekunden:
+        input(v-model="timeLenght" size="5")
 </template>
 
 <script>
