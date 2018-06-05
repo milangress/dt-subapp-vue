@@ -6,6 +6,8 @@
           g(:class="rythm")
           rect(:x="rythm.x[i]" :y="0" :width="rythm.width[i]" :height="bar.height" fill="darkgrey" stroke="black")
             rect(x="0" :y="0" :width="rythm.width[i]" height="100%" fill="darkgrey" stroke="black")
+          g(:class="rythmBar" transform="translate(0,0)")
+            rect(:x="rythm.x[i]" :y="0" :width="rythm.width[i]" height="100%" fill="darkgrey" stroke="black")
       g#pulse
         rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
       g
