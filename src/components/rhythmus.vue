@@ -1,28 +1,34 @@
 <template lang="pug">
   div
     svg(width="100vw",height="100vh")
+      g.time-bar
+        rect(:x="timeLooptoPercent(getTimeLoop())" y="0" width="200%" height="100%" fill="url(#verlauf)" stroke="none")
       g.bars
         template(v-for="(rythmWeight, i) in rythmWeights")
           //g(class="rythmBar" :transform="xTranslateSyntax(rythm.x[i])")
           //https://www.sarasoueidan.com/blog/mimic-relative-positioning-in-svg/
           svg(:x="rythm.x[i]" :width="rythm.width[i]")
-            rect(x="0" y="0" width="100%" height="100%" fill="darkgrey" stroke="black")
+            rect(x="0" y="0" width="100%" height="100%" fill="none" stroke="black")
       g#pulse
         rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
-      g.time-bar
-        rect(:x="timeLooptoPercent(getTimeLoop())" y="0" width="200%" height="100%" fill="url(#verlauf)" stroke="none")
       g#interface
-        ellipse(cx="90%" cy="90%" rx="14" ry="14" fill="black" stroke="black" @click="() => {removeBar()}")
-        ellipse(cx="95%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addBar()}")
+        use(href="#minus" x="90%" y="90%" width="50" height="50" @click="() => {removeBar()}")
+        use(href="#plus" x="95%" y="90%" width="50" height="50" @click="() => {addBar()}")
         template(v-for="(rythmWeight, i) in rythmWeights")
           svg(:x="rythm.x[i]" :width="rythm.width[i]")
-            ellipse(cx="50%" cy="5%" rx="14" ry="14" fill="black" stroke="black" @click="() => {minusRythmWeight(i)}")
-            ellipse(cx="50%" cy="10%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addRythmWeight(i)}")
+            use(href="#plus" x="15px" y="50px" width="40" height="40" @click="() => {addRythmWeight(i)}")
+            use(href="#minus" x="15px" y="120px" width="40" height="40" @click="() => {minusRythmWeight(i)}")
       linearGradient#verlauf
-        stop(offset="0%" stop-color="white")
-        stop(offset="50%" stop-color="black")
-        stop(offset="50%" stop-color="white")
-        stop(offset="100%" stop-color="black")
+        stop(offset="0%" stop-color="#FFF")
+        stop(offset="50%" stop-color="#000")
+        stop(offset="50%" stop-color="#FFF")
+        stop(offset="100%" stop-color="#000")
+      symbol#plus(viewBox="0 0 100 100")
+        rect(x="33px" y="0" width="33px" height="100px" fill="black")
+        rect(x="0" y="33px" width="100px" height="33px" fill="black")
+      symbol#minus(viewBox="0 0 100 100")
+        rect(x="0" y="33px" width="150px" height="33px" fill="black")
+
     div.input-interface
       label Sekunden:
         input(v-model="timeLenght" size="5")
@@ -76,6 +82,9 @@
       minusRythmWeight: function (pos) {
         let newValue = this.rythmWeights[pos] - 5
         this.$set(this.rythmWeights, pos, newValue)
+        if (newValue <= 0) {
+          this.rythmWeights.splice(pos, 1)
+        }
       },
       // Play Sound (q&d weil Audio API nicht überlagern kann)
       player: function (soundfile) {
@@ -122,9 +131,12 @@
 </script>
 
 <style scoped>
+  div svg {
+    background: darkgray;
+  }
   .bars rect {
     stroke: #fff;
-    border: 5px;
+    stroke-width: 3px;
   }
   .time-bar {
     opacity: 0.5;
