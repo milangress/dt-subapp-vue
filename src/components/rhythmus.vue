@@ -7,7 +7,7 @@
     g#pulse
       rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
     g
-      rect(:x="0" :y="bar.height/2-50" :width="factorToWidth(timeLoop)" height="100px" fill="black" stroke="black")
+      rect(:x="0" y="45%" :width="timeLooptoPercent(timeLoop)" height="10%" fill="black" stroke="black")
     g#interface
       ellipse(cx="90%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {removeBar()}")
       ellipse(cx="95%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addBar()}")
@@ -40,6 +40,9 @@
       },
       removeBar: function () {
         this.rythmWeights.pop()
+      },
+      timeLooptoPercent: function (timeLoop) {
+        return timeLoop * 100 + '%'
       }
     },
     computed: {
