@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 
 import WobbleClock from './lib/clock'
+import NetworkClock from './lib/network-clock'
 import store from './store'
 
 import localID from './plugins/local-id'
@@ -24,6 +25,11 @@ const clock = new WobbleClock(
   store
 )
 clock.start()
+
+const netClock = new NetworkClock()
+setInterval(() => {
+  console.log('time', netClock.getTime())
+}, 1000)
 
 /* eslint-disable no-new */
 new Vue({
