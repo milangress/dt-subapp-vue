@@ -28,7 +28,7 @@
         rythmWeights: [
           10, 20, 10, 10
         ],
-        timeLenght: 60
+        timeLenght: 10
       }
     },
     methods: {
@@ -76,7 +76,7 @@
         return {width: rythmBarWidth, x: rythmBarXpos, factor: rythmFactor}
       },
       timeLoop: function () {
-        let timeFactor = (this.timeLenght / 6) * 1000
+        let timeFactor = this.timeLenght * 1000
         return this.time % timeFactor / timeFactor
       },
       rhytmTime: function () {
