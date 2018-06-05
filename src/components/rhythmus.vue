@@ -6,9 +6,9 @@
           //g(class="rythmBar" :transform="xTranslateSyntax(rythm.x[i])")
           //https://www.sarasoueidan.com/blog/mimic-relative-positioning-in-svg/
           svg(:x="rythm.x[i]" :width="rythm.width[i]")
-            rect(x="0" :y="0" width="100%" height="100%" fill="darkgrey" stroke="black")
-            ellipse(cx="10%" cy="5%" rx="14" ry="14" fill="black" stroke="black")
-            ellipse(cx="90%" cy="5%" rx="14" ry="14" fill="white" stroke="black")
+            rect(x="0" y="0" width="100%" height="100%" fill="darkgrey" stroke="black")
+            ellipse(cx="50%" cy="5%" rx="14" ry="14" fill="black" stroke="black" @click="() => {minusRythmWeight(i)}")
+            ellipse(cx="50%" cy="10%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addRythmWeight(i)}")
       g#pulse
         rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
       g
@@ -46,6 +46,14 @@
       },
       timeLooptoPercent: function (timeLoop) {
         return timeLoop * 100 + '%'
+      },
+      addRythmWeight: function (pos) {
+        let newValue = this.rythmWeights[pos] + 5
+        this.$set(this.rythmWeights, pos, newValue)
+      },
+      minusRythmWeight: function (pos) {
+        let newValue = this.rythmWeights[pos] - 5
+        this.$set(this.rythmWeights, pos, newValue)
       }
     },
     computed: {
