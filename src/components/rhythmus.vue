@@ -3,7 +3,9 @@
     g
       template(v-for="(rythmWeight, i) in rythmWeights")
         g(:class="rythm")
-        rect(:x="rythm.x[i]" :y="0" :width="rythm.width[i]" :height="bar.height" fill="darkgrey" stroke="black" v-bind:class="{ pulsing: pulse }")
+        rect(:x="rythm.x[i]" :y="0" :width="rythm.width[i]" :height="bar.height" fill="darkgrey" stroke="black")
+    g#pulse
+      rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
     g
       rect(:x="0" :y="bar.height/2-50" :width="factorToWidth(timeLoop)" height="100px" fill="black" stroke="black")
     g#interface
@@ -87,9 +89,6 @@
   rect {
     stroke: #fff;
     border: 5px;
-  }
-  .pulsing {
-    fill: white;
   }
 
 </style>
