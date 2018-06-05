@@ -24,7 +24,7 @@ class NetworkClock extends TinyEmitter {
 
   getTime () {
     if (!this._offset) return -1
-    return Date.now() - this._offset
+    return Date.now() + this._offset
   }
 }
 
