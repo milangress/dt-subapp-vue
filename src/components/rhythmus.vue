@@ -28,7 +28,7 @@
         rect(x="0" y="33px" width="100px" height="33px" fill="black")
       symbol#minus(viewBox="0 0 100 100")
         rect(x="0" y="33px" width="150px" height="33px" fill="black")
-
+    //audio(src="../assets/beep.mp3")
     div.input-interface
       label Sekunden:
         input(v-model="timeLenght" size="5")
@@ -44,7 +44,7 @@
         ],
         timeLenght: 10,
         playing: {},
-        sounds: {pulse: 'knock.ogg'},
+        sounds: {pulse: '../assets/beep.mp3'},
         netClock: new NetworkClock(),
         time: 0
       }
@@ -124,6 +124,9 @@
       },
       pulse: function () {
         let timeRound = Math.round(this.getTimeLoop() * 100)
+        /* if (this.rhytmTime.includes(timeRound)) {
+          this.player('pulse')
+        } */
         return this.rhytmTime.includes(timeRound)
       }
     }
