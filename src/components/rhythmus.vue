@@ -5,6 +5,7 @@
         template(v-for="(rythmWeight, i) in rythmWeights")
           g(:class="rythm")
           rect(:x="rythm.x[i]" :y="0" :width="rythm.width[i]" :height="bar.height" fill="darkgrey" stroke="black")
+            rect(x="0" :y="0" :width="rythm.width[i]" height="100%" fill="darkgrey" stroke="black")
       g#pulse
         rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
       g
@@ -24,11 +25,6 @@
         rythmWeights: [
           10, 20, 10, 10
         ],
-        bar: {
-          width: 100,
-          height: window.innerHeight,
-          x: 100
-        },
         timeLenght: 60
       }
     },
