@@ -1,20 +1,24 @@
 <template lang="pug">
   div
     svg(width="100vw",height="100vh")
-      g
+      g.bars
         template(v-for="(rythmWeight, i) in rythmWeights")
-          g(:class="rythm")
-          rect(:x="rythm.x[i]" :y="0" :width="rythm.width[i]" :height="bar.height" fill="darkgrey" stroke="black")
-            rect(x="0" :y="0" :width="rythm.width[i]" height="100%" fill="darkgrey" stroke="black")
-          g(:class="rythmBar" transform="translate(0,0)")
-            rect(:x="rythm.x[i]" :y="0" :width="rythm.width[i]" height="100%" fill="darkgrey" stroke="black")
+          //g(class="rythmBar" :transform="xTranslateSyntax(rythm.x[i])")
+          //https://www.sarasoueidan.com/blog/mimic-relative-positioning-in-svg/
+          svg(:x="rythm.x[i]" :width="rythm.width[i]")
+            rect(x="0" y="0" width="100%" height="100%" fill="darkgrey" stroke="black")
+            ellipse(cx="50%" cy="5%" rx="14" ry="14" fill="black" stroke="black" @click="() => {minusRythmWeight(i)}")
+            ellipse(cx="50%" cy="10%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addRythmWeight(i)}")
       g#pulse
         rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
-      g
-        rect(:x="0" y="45%" :width="timeLooptoPercent(timeLoop)" height="10%" fill="black" stroke="black")
+      g.time-bar
+        rect(:x="0" y="0" :width="timeLooptoPercent(timeLoop)" height="100%" fill="url(#verlauf)" stroke="none")
       g#interface
-        ellipse(cx="90%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {removeBar()}")
+        ellipse(cx="90%" cy="90%" rx="14" ry="14" fill="black" stroke="black" @click="() => {removeBar()}")
         ellipse(cx="95%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addBar()}")
+      linearGradient#verlauf
+        stop(offset="0%" stop-color="white")
+        stop(offset="100%" stop-color="black")
     div.input-interface
       label Sekunden:
         input(v-model="timeLenght" size="5")
@@ -27,7 +31,7 @@
         rythmWeights: [
           10, 20, 10, 10
         ],
-        timeLenght: 60
+        timeLenght: 10
       }
     },
     methods: {
@@ -45,6 +49,14 @@
       },
       timeLooptoPercent: function (timeLoop) {
         return timeLoop * 100 + '%'
+      },
+      addRythmWeight: function (pos) {
+        let newValue = this.rythmWeights[pos] + 5
+        this.$set(this.rythmWeights, pos, newValue)
+      },
+      minusRythmWeight: function (pos) {
+        let newValue = this.rythmWeights[pos] - 5
+        this.$set(this.rythmWeights, pos, newValue)
       }
     },
     computed: {
@@ -67,7 +79,7 @@
         return {width: rythmBarWidth, x: rythmBarXpos, factor: rythmFactor}
       },
       timeLoop: function () {
-        let timeFactor = (this.timeLenght / 6) * 1000
+        let timeFactor = this.timeLenght * 1000
         return this.time % timeFactor / timeFactor
       },
       rhytmTime: function () {
@@ -88,9 +100,13 @@
 </script>
 
 <style scoped>
-  rect {
+  .bars rect {
     stroke: #fff;
     border: 5px;
+  }
+  .time-bar {
+    opacity: 0.5;
+    pointer-events: none;
   }
   .input-interface {
     position: absolute;
