@@ -27,6 +27,7 @@
 </template>
 
 <script>
+  import NetworkClock from '../lib/network-clock'
   export default {
     data () {
       return {
@@ -35,7 +36,8 @@
         ],
         timeLenght: 10,
         playing: {},
-        sounds: {pulse: 'knock.ogg'}
+        sounds: {pulse: 'knock.ogg'},
+        netClock: new NetworkClock()
       }
     },
     methods: {
@@ -75,7 +77,8 @@
     },
     computed: {
       time () {
-        return this.$store.state.time
+        return this.netClock.getTime()
+        // return this.$store.state.time
       },
       rythm: function () {
         let rythmFactor = []
@@ -111,6 +114,10 @@
       }
     }
   }
+
+  setInterval(() => {
+    console.log('Vue time', netClock.getTime())
+  }, 1000)
 </script>
 
 <style scoped>
