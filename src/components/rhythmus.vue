@@ -10,7 +10,7 @@
       g#pulse
         rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
       g.time-bar
-        rect(:x="0" y="0" :width="timeLooptoPercent(timeLoop)" height="100%" fill="url(#verlauf)" stroke="none")
+        rect(:x="0" y="0" :width="timeLooptoPercent(getTimeLoop())" height="100%" fill="url(#verlauf)" stroke="none")
       g#interface
         ellipse(cx="90%" cy="90%" rx="14" ry="14" fill="black" stroke="black" @click="() => {removeBar()}")
         ellipse(cx="95%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addBar()}")
@@ -22,7 +22,7 @@
         stop(offset="0%" stop-color="white")
         stop(offset="100%" stop-color="black")
     div.input-interface
-      label Sekunden:
+      label Sekunden: {{ time }}
         input(v-model="timeLenght" size="5")
 </template>
 
@@ -37,8 +37,15 @@
         timeLenght: 10,
         playing: {},
         sounds: {pulse: 'knock.ogg'},
-        netClock: new NetworkClock()
+        netClock: new NetworkClock(),
+        time: 0
       }
+    },
+    mounted () {
+      const _this = this
+      setInterval(() => {
+        _this.time = this.netClock.getTime()
+      }, 40)
     },
     methods: {
       weightToFactor (weight) {
@@ -55,6 +62,10 @@
       },
       timeLooptoPercent: function (timeLoop) {
         return timeLoop * 100 + '%'
+      },
+      getTimeLoop () {
+        let timeFactor = this.timeLenght * 1000
+        return this.time % timeFactor / timeFactor
       },
       addRythmWeight: function (pos) {
         let newValue = this.rythmWeights[pos] + 5
@@ -76,10 +87,6 @@
       }
     },
     computed: {
-      time () {
-        return this.netClock.getTime()
-        // return this.$store.state.time
-      },
       rythm: function () {
         let rythmFactor = []
         let rythmBarWidth = []
@@ -95,10 +102,6 @@
         })
         return {width: rythmBarWidth, x: rythmBarXpos, factor: rythmFactor}
       },
-      timeLoop: function () {
-        let timeFactor = this.timeLenght * 1000
-        return this.time % timeFactor / timeFactor
-      },
       rhytmTime: function () {
         let timeArray = []
         let time = 0
@@ -109,15 +112,11 @@
         return timeArray
       },
       pulse: function () {
-        let timeRound = Math.round(this.timeLoop * 100)
+        let timeRound = Math.round(this.getTimeLoop() * 100)
         return this.rhytmTime.includes(timeRound)
       }
     }
   }
-
-  setInterval(() => {
-    console.log('Vue time', netClock.getTime())
-  }, 1000)
 </script>
 
 <style scoped>

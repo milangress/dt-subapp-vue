@@ -11,7 +11,7 @@ class NetworkClock extends TinyEmitter {
     this._start = undefined
     this._remote = undefined
     this._internal = undefined
-    this._offset = undefined
+    this._offset = 0
     this._primus.on('data', data => {
       // console.log('Received a clock message', data)
       // _this.emit('clock', data)
@@ -23,8 +23,12 @@ class NetworkClock extends TinyEmitter {
   }
 
   getTime () {
-    if (!this._offset) return -1
+    // if (!this._offset) return -1
     return Date.now() + this._offset
+  }
+
+  getOffset () {
+    return this._offset
   }
 }
 
