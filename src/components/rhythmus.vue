@@ -1,11 +1,14 @@
 <template lang="pug">
   svg(width="100vw",height="100vh")
-    g(@click="() => {addBar()}")
+    g
       template(v-for="(rythmWeight, i) in rythmWeights")
         g(:class="rythm")
         rect(:x="rythm.x[i]" :y="0" :width="rythm.width[i]" :height="bar.height" fill="darkgrey" stroke="black" v-bind:class="{ pulsing: pulse }")
-    g(@click="() => {removeBar()}")
+    g
       rect(:x="0" :y="bar.height/2-50" :width="factorToWidth(timeLoop)" height="100px" fill="black" stroke="black")
+    g#interface
+      ellipse(cx="90%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {removeBar()}")
+      ellipse(cx="95%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addBar()}")
 </template>
 
 <script>
