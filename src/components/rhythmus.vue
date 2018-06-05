@@ -31,7 +31,9 @@
         rythmWeights: [
           10, 20, 10, 10
         ],
-        timeLenght: 10
+        timeLenght: 10,
+        playing: {},
+        sounds: {pulse: 'knock.ogg'}
       }
     },
     methods: {
@@ -57,6 +59,16 @@
       minusRythmWeight: function (pos) {
         let newValue = this.rythmWeights[pos] - 5
         this.$set(this.rythmWeights, pos, newValue)
+      },
+      // Play Sound (q&d weil Audio API nicht überlagern kann)
+      player: function (soundfile) {
+        let b = new Date()
+        let a = soundfile + b.getTime()
+        this.playing[a] = new Audio(this.sounds[soundfile])
+        this.playing[a].onended = function () {
+          delete this.playing[a]
+        }
+        this.playing[a].play()
       }
     },
     computed: {
