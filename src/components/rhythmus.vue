@@ -1,16 +1,19 @@
 <template lang="pug">
-  svg(width="100vw",height="100vh")
-    g
-      template(v-for="(rythmWeight, i) in rythmWeights")
-        g(:class="rythm")
-        rect(:x="rythm.x[i]" :y="0" :width="rythm.width[i]" :height="bar.height" fill="darkgrey" stroke="black")
-    g#pulse
-      rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
-    g
-      rect(:x="0" y="45%" :width="timeLooptoPercent(timeLoop)" height="10%" fill="black" stroke="black")
-    g#interface
-      ellipse(cx="90%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {removeBar()}")
-      ellipse(cx="95%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addBar()}")
+  div
+    svg(width="100vw",height="100vh")
+      g
+        template(v-for="(rythmWeight, i) in rythmWeights")
+          g(:class="rythm")
+          rect(:x="rythm.x[i]" :y="0" :width="rythm.width[i]" :height="bar.height" fill="darkgrey" stroke="black")
+      g#pulse
+        rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
+      g
+        rect(:x="0" y="45%" :width="timeLooptoPercent(timeLoop)" height="10%" fill="black" stroke="black")
+      g#interface
+        ellipse(cx="90%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {removeBar()}")
+        ellipse(cx="95%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addBar()}")
+    div.input-interface
+      input(v-model="timeLenght" placeholder="edit me" width="100px")
 </template>
 
 <script>
@@ -25,7 +28,7 @@
           height: window.innerHeight,
           x: 100
         },
-        timeLenght: 10
+        timeLenght: 60
       }
     },
     methods: {
@@ -65,7 +68,7 @@
         return {width: rythmBarWidth, x: rythmBarXpos, factor: rythmFactor}
       },
       timeLoop: function () {
-        let timeFactor = this.timeLenght * 1000
+        let timeFactor = (this.timeLenght / 6) * 1000
         return this.time % timeFactor / timeFactor
       },
       rhytmTime: function () {
@@ -89,6 +92,11 @@
   rect {
     stroke: #fff;
     border: 5px;
+  }
+  .input-interface {
+    position: absolute;
+    bottom: 5vh;
+    left: 2vh;
   }
 
 </style>
