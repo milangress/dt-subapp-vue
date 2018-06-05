@@ -7,8 +7,6 @@
           //https://www.sarasoueidan.com/blog/mimic-relative-positioning-in-svg/
           svg(:x="rythm.x[i]" :width="rythm.width[i]")
             rect(x="0" y="0" width="100%" height="100%" fill="darkgrey" stroke="black")
-            ellipse(cx="50%" cy="5%" rx="14" ry="14" fill="black" stroke="black" @click="() => {minusRythmWeight(i)}")
-            ellipse(cx="50%" cy="10%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addRythmWeight(i)}")
       g#pulse
         rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
       g.time-bar
@@ -16,6 +14,10 @@
       g#interface
         ellipse(cx="90%" cy="90%" rx="14" ry="14" fill="black" stroke="black" @click="() => {removeBar()}")
         ellipse(cx="95%" cy="90%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addBar()}")
+        template(v-for="(rythmWeight, i) in rythmWeights")
+          svg(:x="rythm.x[i]" :width="rythm.width[i]")
+            ellipse(cx="50%" cy="5%" rx="14" ry="14" fill="black" stroke="black" @click="() => {minusRythmWeight(i)}")
+            ellipse(cx="50%" cy="10%" rx="14" ry="14" fill="white" stroke="black" @click="() => {addRythmWeight(i)}")
       linearGradient#verlauf
         stop(offset="0%" stop-color="white")
         stop(offset="100%" stop-color="black")
