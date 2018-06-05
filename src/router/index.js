@@ -6,6 +6,9 @@ import SkeletonTest from '@/components/helpers/SkeletonTester'
 import StartSeite from '@/components/StartSeite'
 import poseTool from '@/components/pose-tool'
 import RhythmAndShoes from '@/components/RhythmAndShoes'
+import RotatingArcs from '@/components/RotatingArcs'
+import mtest from '@/components/mtest'
+import rhythmus from '@/components/rhythmus'
 import PathDrawer from '@/components/PathDrawer'
 import LostInSpace from '@/components/LostInSpace'
 import Login from '@/components/Login'
@@ -48,6 +51,19 @@ export default new Router({
       path: '/path-drawer',
       name: 'PathDrawer',
       component: PathDrawer
+    },
+    {
+      path: '/rotating-arcs',
+      component: RotatingArcs
+    },
+    {
+      path: '/mtest',
+      component: mtest
+    },
+    {
+      path: '/rythm',
+      component: rhythmus
     }
+
   ]
 })
