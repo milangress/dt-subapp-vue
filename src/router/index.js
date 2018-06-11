@@ -8,6 +8,7 @@ import poseTool from '@/components/pose-tool'
 import RhythmAndShoes from '@/components/RhythmAndShoes'
 import PathDrawer from '@/components/PathDrawer'
 import LostInSpace from '@/components/LostInSpace'
+import RotatingArcs from '@/components/RotatingArcs'
 import Login from '@/components/Login'
 
 Vue.use(Router)
@@ -48,6 +49,10 @@ export default new Router({
       path: '/path-drawer',
       name: 'PathDrawer',
       component: PathDrawer
+    },
+    {
+      path: '/rotating-arcs',
+      component: RotatingArcs
     }
   ]
 })

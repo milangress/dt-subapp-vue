@@ -63,7 +63,7 @@
     data () {
       return {
         showShapeFilling: true,
-        showForceField: false,
+        showForceField: true,
         showShapes: false,
         forceFieldCellSize: 60,
         numberOfParticles: 100,
