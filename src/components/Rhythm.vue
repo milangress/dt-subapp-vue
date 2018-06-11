@@ -45,7 +45,8 @@
         playing: {},
         sounds: {pulse: '../assets/beep.mp3'},
         netClock: new NetworkClock(),
-        time: 0
+        time: 0,
+        lastPulseTime: 0
       }
     },
     mounted () {
@@ -122,8 +123,13 @@
         return timeArray
       },
       pulse: function () {
-        let timeRound = Math.round(this.getTimeLoop() * 100)
-        return this.rhythmTime.includes(timeRound)
+        let timeNow = this.getTimeLoop() * 100
+        let pulseNow = this.rhythmTime.filter(t => {
+          return timeNow < t
+        }).shift()
+        let doPulse = this.lastPulseTime !== pulseNow
+        this.lastPulseTime = pulseNow
+        return doPulse
       }
     }
   }
