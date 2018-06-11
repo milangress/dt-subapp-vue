@@ -1,37 +1,36 @@
 <template lang="pug">
   div
     svg(width="100vw",height="100vh")
+      defs
+        linearGradient#verlauf
+          stop(offset="50%" stop-color="#FFF")
+          stop(offset="100%" stop-color="#000")
+        symbol#plus(viewBox="0 0 100 100")
+          rect(x="33px" y="0" width="33px" height="100px" fill="black")
+          rect(x="0" y="33px" width="100px" height="33px" fill="black")
+        symbol#minus(viewBox="0 0 100 100")
+          rect(x="0" y="33px" width="150px" height="33px" fill="black")
       g.time-bar
-        rect(:x="timeLooptoPercent(getTimeLoop())" y="0" width="200%" height="100%" fill="url(#verlauf)" stroke="none")
+        rect(:x="timeLooptoPercent(getTimeLoop())" y="0" width="100%" height="100%" fill="url(#verlauf)" stroke="none")
       g.bars
-        template(v-for="(rythmWeight, i) in rythmWeights")
-          //g(class="rythmBar" :transform="xTranslateSyntax(rythm.x[i])")
+        template(v-for="(rhythmWeight, i) in rhythmWeights")
+          //g(class="rhythmBar" :transform="xTranslateSyntax(rhythm.x[i])")
           //https://www.sarasoueidan.com/blog/mimic-relative-positioning-in-svg/
-          svg(:x="rythm.x[i]" :width="rythm.width[i]")
+          svg(:x="rhythm.x[i]" :width="rhythm.width[i]")
             rect(x="0" y="0" width="100%" height="100%" fill="none" stroke="black")
       g#pulse
         rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
       g#interface
         use(href="#minus" x="90%" y="90%" width="50" height="50" @click="() => {removeBar()}")
         use(href="#plus" x="95%" y="90%" width="50" height="50" @click="() => {addBar()}")
-        template(v-for="(rythmWeight, i) in rythmWeights")
-          svg(:x="rythm.x[i]" :width="rythm.width[i]")
-            use(href="#plus" x="15px" y="50px" width="40" height="40" @click="() => {addRythmWeight(i)}")
-            use(href="#minus" x="15px" y="120px" width="40" height="40" @click="() => {minusRythmWeight(i)}")
-      linearGradient#verlauf
-        stop(offset="0%" stop-color="#FFF")
-        stop(offset="50%" stop-color="#000")
-        stop(offset="50%" stop-color="#FFF")
-        stop(offset="100%" stop-color="#000")
-      symbol#plus(viewBox="0 0 100 100")
-        rect(x="33px" y="0" width="33px" height="100px" fill="black")
-        rect(x="0" y="33px" width="100px" height="33px" fill="black")
-      symbol#minus(viewBox="0 0 100 100")
-        rect(x="0" y="33px" width="150px" height="33px" fill="black")
+        template(v-for="(rhythmWeight, i) in rhythmWeights")
+          svg(:x="rhythm.x[i]" :width="rhythm.width[i]")
+            use(href="#plus" x="15px" y="50px" width="40" height="40" @click="() => {addRhythmWeight(i)}")
+            use(href="#minus" x="15px" y="120px" width="40" height="40" @click="() => {minusRhythmWeight(i)}")
     //audio(src="../assets/beep.mp3")
     div.input-interface
       label Sekunden:
-        input(v-model="timeLenght" size="5")
+        input(v-model="timeLength" size="5")
 </template>
 
 <script>
@@ -39,10 +38,10 @@
   export default {
     data () {
       return {
-        rythmWeights: [
+        rhythmWeights: [
           10, 20, 10, 10
         ],
-        timeLenght: 10,
+        timeLength: 10,
         playing: {},
         sounds: {pulse: '../assets/beep.mp3'},
         netClock: new NetworkClock(),
@@ -57,33 +56,33 @@
     },
     methods: {
       weightToFactor (weight) {
-        let sumOfRythm = this.rythmWeights.reduce(function (acc, val) {
+        let sumOfRhythm = this.rhythmWeights.reduce(function (acc, val) {
           return acc + val
         })
-        return (weight / sumOfRythm)
+        return (weight / sumOfRhythm)
       },
       addBar: function () {
-        this.rythmWeights.push(10)
+        this.rhythmWeights.push(10)
       },
       removeBar: function () {
-        this.rythmWeights.pop()
+        this.rhythmWeights.pop()
       },
       timeLooptoPercent: function (timeLoop) {
         return (timeLoop * 100) - 100 + '%'
       },
       getTimeLoop () {
-        let timeFactor = this.timeLenght * 1000
-        return this.time % timeFactor / timeFactor
+        let timeFactor = this.timeLength * 1000
+        return (this.time % timeFactor) / timeFactor
       },
-      addRythmWeight: function (pos) {
-        let newValue = this.rythmWeights[pos] + 5
-        this.$set(this.rythmWeights, pos, newValue)
+      addRhythmWeight: function (pos) {
+        let newValue = this.rhythmWeights[pos] + 5
+        this.$set(this.rhythmWeights, pos, newValue)
       },
-      minusRythmWeight: function (pos) {
-        let newValue = this.rythmWeights[pos] - 5
-        this.$set(this.rythmWeights, pos, newValue)
+      minusRhythmWeight: function (pos) {
+        let newValue = this.rhythmWeights[pos] - 5
+        this.$set(this.rhythmWeights, pos, newValue)
         if (newValue <= 0) {
-          this.rythmWeights.splice(pos, 1)
+          this.rhythmWeights.splice(pos, 1)
         }
       },
       // Play Sound (q&d weil Audio API nicht überlagern kann)
@@ -98,25 +97,25 @@
       }
     },
     computed: {
-      rythm: function () {
-        let rythmFactor = []
-        let rythmBarWidth = []
-        let rythmBarXpos = []
+      rhythm: function () {
+        let rhythmFactor = []
+        let rhythmBarWidth = []
+        let rhythmBarXpos = []
         let x = 0
-        this.rythmWeights.forEach((val, i) => {
+        this.rhythmWeights.forEach((val, i) => {
           let barFactor = this.weightToFactor(val)
           let width = barFactor * 100
-          rythmFactor[i] = barFactor
-          rythmBarWidth[i] = width + '%'
-          rythmBarXpos[i] = x + '%'
+          rhythmFactor[i] = barFactor
+          rhythmBarWidth[i] = width + '%'
+          rhythmBarXpos[i] = x + '%'
           x = x + width
         })
-        return {width: rythmBarWidth, x: rythmBarXpos, factor: rythmFactor}
+        return {width: rhythmBarWidth, x: rhythmBarXpos, factor: rhythmFactor}
       },
-      rhytmTime: function () {
+      rhythmTime: function () {
         let timeArray = []
         let time = 0
-        this.rythm.factor.forEach(function (weight) {
+        this.rhythm.factor.forEach(function (weight) {
           time = weight + time
           timeArray.push(Math.round(time * 100))
         })
@@ -124,10 +123,7 @@
       },
       pulse: function () {
         let timeRound = Math.round(this.getTimeLoop() * 100)
-        /* if (this.rhytmTime.includes(timeRound)) {
-          this.player('pulse')
-        } */
-        return this.rhytmTime.includes(timeRound)
+        return this.rhythmTime.includes(timeRound)
       }
     }
   }
