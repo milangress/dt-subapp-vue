@@ -4,7 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
-import WobbleClock from './lib/clock'
+// import WobbleClock from './lib/clock'
 import store from './store'
 
 import localID from './plugins/local-id'
@@ -15,6 +15,7 @@ Vue.config.productionTip = false
 localID({ Vue })
 loginOrSignup({ Vue })
 
+/*
 const clock = new WobbleClock(
   // target fps
   50,
@@ -24,6 +25,7 @@ const clock = new WobbleClock(
   store
 )
 clock.start()
+*/
 
 /* eslint-disable no-new */
 new Vue({
