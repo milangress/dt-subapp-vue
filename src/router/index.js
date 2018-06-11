@@ -7,8 +7,10 @@ import StartSeite from '@/components/StartSeite'
 import poseTool from '@/components/pose-tool'
 import RhythmAndShoes from '@/components/RhythmAndShoes'
 import RotatingArcs from '@/components/RotatingArcs'
+
 import mtest from '@/components/mtest'
-import rhythmus from '@/components/rhythmus'
+import Rhythm from '@/components/Rhythm'
+
 import PathDrawer from '@/components/PathDrawer'
 import LostInSpace from '@/components/LostInSpace'
 import Login from '@/components/Login'
@@ -61,8 +63,8 @@ export default new Router({
       component: mtest
     },
     {
-      path: '/rythm',
-      component: rhythmus
+      path: '/rhythm',
+      component: Rhythm
     }
 
   ]

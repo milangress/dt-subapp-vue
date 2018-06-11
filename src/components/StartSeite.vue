@@ -36,6 +36,10 @@
           {
             name: 'Video Tool',
             path: urls.subappQuasar + '/videosequencer'
+          },
+          {
+            name: 'Rhythm Tool',
+            path: urls.subappVue + '/#/lost-in-space'
           }
         ]
 
