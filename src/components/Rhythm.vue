@@ -122,14 +122,17 @@
         })
         return timeArray
       },
-      pulse: function () {
+      currentTimeSlot () {
         let timeNow = this.getTimeLoop() * 100
-        let pulseNow = this.rhythmTime.filter(t => {
+        return this.rhythmTime.filter(t => {
           return timeNow < t
         }).shift()
-        let doPulse = this.lastPulseTime !== pulseNow
-        this.lastPulseTime = pulseNow
-        return doPulse
+      },
+      pulse: function () {
+        return this.lastTimeSlot !== this.currentTimeSlot
+      },
+      lastTimeSlot () {
+        return this.currentTimeSlot
       }
     }
   }
