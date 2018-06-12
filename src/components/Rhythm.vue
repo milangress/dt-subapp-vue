@@ -55,6 +55,10 @@
       setInterval(() => {
         _this.time = this.netClock.getTime()
       }, 40)
+      this.netClock.on('broadcast', data => {
+        console.log('broadcast', data)
+      })
+      this.netClock.broadcast({ test: 'asdf' })
     },
     methods: {
       trianglePoints: function () {
