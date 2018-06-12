@@ -18,16 +18,16 @@
           //https://www.sarasoueidan.com/blog/mimic-relative-positioning-in-svg/
           svg(:x="rhythm.x[i]" :width="rhythm.width[i]")
             rect(x="0" y="0" width="100%" height="100%" fill="none" stroke="white")
-            polygon(:points="trianglePoints()" fill="red ")
+            polygon(:points="trianglePoints()" fill="white ")
       g#pulse
         rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
       g#interface
-        use(xlink:href="#minus" x="90%" y="90%" width="50" height="50" @click="() => {removeBar()}")
-        use(xlink:href="#plus" x="95%" y="90%" width="50" height="50" @click="() => {addBar()}")
+        use(href="#minus" x="90%" y="90%" width="50" height="50" @click="() => {removeBar()}")
+        use(href="#plus" x="95%" y="90%" width="50" height="50" @click="() => {addBar()}")
         template(v-for="(rhythmWeight, i) in rhythmWeights")
           svg(:x="rhythm.x[i]" :width="rhythm.width[i]")
-            use(xlink:href="#plus" x="15px" y="50px" width="40" height="40" @click="() => {addRhythmWeight(i)}")
-            use(xlink:href="#minus" x="15px" y="120px" width="40" height="40" @click="() => {minusRhythmWeight(i)}")
+            use(href="#plus" x="15px" y="50px" width="40" height="40" @click="() => {addRhythmWeight(i)}")
+            use(href="#minus" x="15px" y="120px" width="40" height="40" @click="() => {minusRhythmWeight(i)}")
     //audio(src="../assets/beep.mp3")
     div.input-interface
       label Sekunden:
@@ -54,11 +54,11 @@
       const _this = this
       setInterval(() => {
         _this.time = this.netClock.getTime()
-      }, (1000 / 25))
+      }, 40)
     },
     methods: {
       trianglePoints: function () {
-        return '0' + window.innerHeight + window.innerWidth + window.innerHeight + window.innerWidth + '0'
+        return `0 ${window.innerHeight}, ${window.innerWidth} ${window.innerHeight}, ${window.innerWidth} 0`
       },
       weightToFactor (weight) {
         let sumOfRhythm = this.rhythmWeights.reduce(function (acc, val) {
