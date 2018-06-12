@@ -95,6 +95,9 @@
           delete this.playing[a]
         }
         this.playing[a].play()
+      },
+      setLastTimeSlot (val) {
+        this.lastTimeSlot = val
       }
     },
     computed: {
@@ -122,17 +125,14 @@
         })
         return timeArray
       },
-      currentTimeSlot () {
+      pulse: function () {
         let timeNow = this.getTimeLoop() * 100
-        return this.rhythmTime.filter(t => {
+        let currentTimeSlot = this.rhythmTime.filter(t => {
           return timeNow < t
         }).shift()
-      },
-      pulse: function () {
-        return this.lastTimeSlot !== this.currentTimeSlot
-      },
-      lastTimeSlot () {
-        return this.currentTimeSlot
+        let doPulse = this.lastTimeSlot !== currentTimeSlot
+        this.setLastTimeSlot(currentTimeSlot)
+        return doPulse
       }
     }
   }
