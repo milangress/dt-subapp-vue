@@ -17,7 +17,7 @@
           //g(class="rhythmBar" :transform="xTranslateSyntax(rhythm.x[i])")
           //https://www.sarasoueidan.com/blog/mimic-relative-positioning-in-svg/
           svg(:x="rhythm.x[i]" :width="rhythm.width[i]")
-            rect(x="0" y="0" width="100%" height="100%" fill="none" stroke="black")
+            rect(x="0" y="0" width="100%" height="100%" fill="none" stroke="white")
       g#pulse
         rect(x="0" y="0" width="100%" height="100%" fill="white" v-show="pulse")
       g#interface
